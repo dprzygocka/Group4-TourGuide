@@ -1,0 +1,27 @@
+{
+  "name": "tourguide",
+  "version": "1.0.0",
+  "description": "The system for customers to book a tour.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.3",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "package.json": "^2.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dprzygocka/Group4-TourGuide.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dprzygocka/Group4-TourGuide/issues"
+  },
+  "homepage": "https://github.com/dprzygocka/Group4-TourGuide#readme"
+}
