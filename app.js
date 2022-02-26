@@ -16,8 +16,10 @@ app.use(express.urlencoded({ extended: true }));
 
 //routers
 const guidesRouter = require("./routes/guides.js");
+const placesRouter = require("./routes/places.js");
 
 app.use(guidesRouter.router);
+app.use(placesRouter.router);
 
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
