@@ -22,6 +22,22 @@ router.get('/api/mysql/places', (req, res) => {
     });
 });
 
+router.get('/api/mysql/places/:place_id', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'SELECT * FROM place WHERE place_id = ?';
+        db.query(query, [req.params.place_id], (error, result, fields) => {
+            if (result && result.length) {
+                res.send(result[0].place_name);
+            } else {
+                res.send({
+                    message: 'No results',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 module.exports = {
   router,
 };
