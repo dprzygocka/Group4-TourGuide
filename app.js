@@ -14,6 +14,11 @@ app.use(express.json());
 // allow to pass form data
 app.use(express.urlencoded({ extended: true }));
 
+//routers
+const guidesRouter = require("./routes/guides.js");
+
+app.use(guidesRouter.router);
+
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
 });
