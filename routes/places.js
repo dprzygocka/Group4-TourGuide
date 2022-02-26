@@ -38,6 +38,24 @@ router.get('/api/mysql/places/:place_id', (req, res) => {
     });
 });
 
+router.post('/api/mysql/places', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'INSERT INTO place (place_name) VALUES (?)';
+        db.query(query, [req.body.placeName], (error, result, fields) => {
+            if (result && result.affectedRows === 1) {
+                res.send({
+                    message: 'Place successfully added.',
+                });
+            } else {
+                res.send({
+                    message: 'Something went wrong',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 module.exports = {
   router,
 };
