@@ -56,6 +56,24 @@ router.post('/api/mysql/places', (req, res) => {
     });
 });
 
+router.delete('/api/mysql/places/:place_id', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'DELETE FROM place WHERE place_id = ?';
+        db.query(query, [req.params.place_id], (error, result, fields) => {
+            if (result && result.affectedRows === 1) {
+                res.send({
+                    message: 'Place successfully deleted.',
+                });
+            } else {
+                res.send({
+                    message: 'Something went wrong',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 module.exports = {
   router,
 };
