@@ -74,6 +74,24 @@ router.delete('/api/mysql/places/:place_id', (req, res) => {
     });
 });
 
+router.patch('/api/mysql/places/:place_id', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'UPDATE place SET place_name = ? WHERE place_id = ?';
+        db.query(query, [req.body.placeName, req.params.place_id], (error, result, fields) => {
+            if (result && result.affectedRows === 1) {
+                res.send({
+                    message: 'Place successfully updated.',
+                });
+            } else {
+                res.send({
+                    message: 'Something went wrong',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 module.exports = {
   router,
 };
