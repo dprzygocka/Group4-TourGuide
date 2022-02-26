@@ -42,11 +42,28 @@ router.get('/api/mysql/guides/:guide_id', (req, res) => {
 router.post('/api/mysql/guides', (req, res) => {
     pool.getConnection((err, db) => {
         let query = 'INSERT INTO guide (first_name, last_name, license, phone, email) VALUES (?, ?, ?, ?, ?)';
-        console.log(req.body);
         db.query(query, [req.body.firstName, req.body.lastName, req.body.license, req.body.phone, req.body.email], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({
                     message: 'Guide successfully added.',
+                });
+            } else {
+                res.send({
+                    message: 'Something went wrong',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
+router.delete('/api/mysql/guides/:guide_id', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'DELETE FROM guide WHERE guide_id = ?';
+        db.query(query, [req.params.guide_id], (error, result, fields) => {
+            if (result && result.affectedRows === 1) {
+                res.send({
+                    message: 'Guide successfully deleted.',
                 });
             } else {
                 res.send({
