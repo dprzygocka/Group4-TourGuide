@@ -68,6 +68,32 @@ router.post('/api/mysql/customers/register', (req, res) => {
     });
 });
 
+router.post('/api/mysql/customers/login', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'SELECT * FROM customer WHERE email = ?';
+        db.query(query, [req.body.email], (error, result, fields) => {
+            if (result && result.length) {
+                bcrypt.compare(req.body.password, result[0].password, (error, match) => {
+                    if (match) {
+                        res.send({
+                            message: 'Customer logged in.',
+                        });
+                    } else {
+                        res.status(401).send({
+                            message: "Incorrect username or password. Try again."
+                        });
+                    }
+                });
+            } else {
+                res.send({
+                    message: 'Something went wrong',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 module.exports = {
   router,
 };
