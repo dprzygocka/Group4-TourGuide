@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const { pool } = require('../database/connection');
-
+const bcrypt = require("bcrypt");
 const { Customer } = require('../models/customer');
 
-
+const saltRounds = 15;
 
 router.get('/api/mysql/customers', (req, res) => {
     pool.getConnection((err, db) => {
@@ -42,6 +42,31 @@ router.get('/api/mysql/customers/:customer_id', (req, res) => {
     });
 });
 
+router.post('/api/mysql/customers/register', (req, res) => {
+    bcrypt.hash(req.body.password, saltRounds, (error, hash) => {
+        if (!error) {
+            pool.getConnection((err, db) => {
+                let query = 'INSERT INTO customer (first_name, last_name, phone, email, password) VALUES (?, ?, ?, ?, ?)';
+                db.query(query, [req.body.firstName, req.body.lastName, req.body.phone, req.body.email, hash], (error, result, fields) => {
+                    if (result && result.affectedRows === 1) {
+                        res.send({
+                            message: 'Customer successfully added.',
+                        });
+                    } else {
+                        res.send({
+                            message: 'Something went wrong',
+                        });
+                    }
+                });
+                db.release();
+            });
+        } else {
+            res.status(500).send({
+                message: "Something went wrong. Try again."
+            });
+        }
+    });
+});
 
 module.exports = {
   router,
