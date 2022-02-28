@@ -21,6 +21,7 @@ const placesRouter = require("./routes/places.js");
 const toursRouter = require("./routes/tours.js");
 const schedulesRouter = require("./routes/schedules.js");
 const ratingsRouter = require("./routes/ratings.js");
+const bookingsRouter = require("./routes/bookings.js");
 
 app.use(guidesRouter.router);
 app.use(customersRouter.router);
@@ -28,6 +29,7 @@ app.use(placesRouter.router);
 app.use(toursRouter.router);
 app.use(schedulesRouter.router);
 app.use(ratingsRouter.router);
+app.use(bookingsRouter.router);
 
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
