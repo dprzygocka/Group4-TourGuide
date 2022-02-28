@@ -12,7 +12,7 @@ router.get('/api/mysql/bookings', (req, res) => {
                 const bookings = [];
                 for (const booking of result) {
                     //create new object
-                    bookings.push(new Booking(booking.number_of_spots, booking.total_price, booking.date_time, new Customer(booking.customer_id, booing.first_name, booking.last_name), new Schedule(booking.schedule_id)));
+                    bookings.push(new Booking(booking.number_of_spots, booking.total_price, booking.date_time, new Customer(booking.customer_id, booking.first_name, booking.last_name), new Schedule(booking.schedule_id)));
                 }
                 res.send(bookings);
             } else {
