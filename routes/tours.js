@@ -94,6 +94,34 @@ router.put('/api/mysql/tours/:tour_id', (req, res) => {
     });
 });
 
+//update one field
+router.patch('/api/mysql/tours/:tour_id', (req, res) => {
+    const fieldName = req.body.fieldName;
+    const fieldValue = req.body.fieldValue;
+    //we can restrict fields to update here
+    if (!fieldName || fieldName !== 'tour_id' || fieldValue ) {
+        res.send({
+            message: 'Nothing to update',
+        });
+        return;
+    }
+    pool.getConnection((err, db) => {
+        let query = `UPDATE tour SET ${fieldName} = ? WHERE tour_id = ?`;
+        db.query(query, [fieldValue, req.params.tour_id], (error, result, fields) => {
+            if (result && result.affectedRows === 1) {
+                res.send({
+                    message: `Tour ${fieldName} successfully updated.`,
+                });
+            } else {
+                res.send({
+                    message: 'Something went wrong',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 module.exports = {
     router,
   };
