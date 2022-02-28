@@ -1,10 +1,10 @@
 class Booking {
-    constructor(numberOfSpots, totalPrice, dateTime, customerId, scheduleId){
+    constructor(numberOfSpots, totalPrice, dateTime, customer, schedule){
         this.numberOfSpots = numberOfSpots;
         this.totalPrice = totalPrice;
         this.dateTime = dateTime;
-        this.customerId = customerId;
-        this.scheduleId = scheduleId;
+        this.customer = customer; //name, surname, id, Object
+        this.schedule = schedule; //schedule object, id
     }
 }
 

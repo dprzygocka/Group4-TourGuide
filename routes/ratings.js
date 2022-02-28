@@ -3,7 +3,7 @@ const { pool } = require('../database/connection');
 const { Rating } = require('../models/Rating');
 
 router.get('/api/mysql/ratings', (req, res) => {
-    const ratingType = req.query.ratingType;
+    const ratingType = req.query.ratingType; //path variable
     if (!ratingType || ratingType !== 'guide_rating' || ratingType !== 'tour_rating') {
         res.send({
             message: 'No results',

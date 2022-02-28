@@ -3,8 +3,8 @@ class Schedule {
         this.id = id;
         this.noFreeSpaces = noFreeSpaces;
         this.dateTime = dateTime; //split to time and date?
-        this.tour = tour;
-        this.guide = guide;
+        this.tour = tour; //destination, duration, description, difficulty
+        this.guide = guide; //name, surname
     }
 }
 
