@@ -1,6 +1,6 @@
-const router = require('express').Router;
+const router = require('express').Router();
 const { pool } = require('../database/connection');
-const { pool } = require('../models/Tour');
+const { Tour } = require('../models/Tour');
 
 router.get('/api/mysql/tours', (req, res) => {
     pool.getConnection((err, db) => {
@@ -93,3 +93,7 @@ router.put('/api/mysql/tours/:tour_id', (req, res) => {
         db.release();
     });
 });
+
+module.exports = {
+    router,
+  };
