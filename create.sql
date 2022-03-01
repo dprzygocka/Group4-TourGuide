@@ -11,6 +11,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema tourguide
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS tourguide;
 CREATE SCHEMA IF NOT EXISTS `tourguide` DEFAULT CHARACTER SET utf8 ;
 USE `tourguide` ;
 
@@ -95,7 +96,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tourguide`.`schedule` (
   `schedule_id` INT NOT NULL AUTO_INCREMENT,
-  `no_free_spaces` INT NOT NULL,
+  `number_of_free_spaces` INT NULL,
   `date_time` DATETIME NOT NULL,
   `tour_id` INT NOT NULL,
   `guide_id` INT NOT NULL,
@@ -121,15 +122,16 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tourguide`.`booking` (
   `number_of_spots` INT NOT NULL,
-  `total_price` DECIMAL(8,2) NOT NULL,
+  `total_price` DECIMAL(8,2) NULL,
   `date_time` DATETIME NOT NULL,
   `customer_id` INT NOT NULL,
   `schedule_id` INT NOT NULL,
   INDEX `customer_booking_idx` (`customer_id` ASC) VISIBLE,
   INDEX `schedule_booking_idx` (`schedule_id` ASC) VISIBLE,
   PRIMARY KEY (`schedule_id`, `customer_id`),
-  UNIQUE INDEX `customer_id_UNIQUE` (`customer_id` ASC) VISIBLE,
-  UNIQUE INDEX `schedule_id_UNIQUE` (`schedule_id` ASC) VISIBLE,
+  UNIQUE (`schedule_id`, `customer_id`),
+  -- UNIQUE INDEX `customer_id_UNIQUE` (`customer_id` ASC) VISIBLE,
+  -- UNIQUE INDEX `schedule_id_UNIQUE` (`schedule_id` ASC) VISIBLE,
   CONSTRAINT `customer_booking`
     FOREIGN KEY (`customer_id`)
     REFERENCES `tourguide`.`customer` (`customer_id`)
