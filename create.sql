@@ -5,19 +5,19 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema tourguide
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema tourguide
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `tourguide` DEFAULT CHARACTER SET utf8 ;
+USE `tourguide` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`customer`
+-- Table `tourguide`.`customer`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`customer` (
+CREATE TABLE IF NOT EXISTS `tourguide`.`customer` (
   `customer_id` INT NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(60) NOT NULL,
   `last_name` VARCHAR(60) NOT NULL,
@@ -31,9 +31,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`place`
+-- Table `tourguide`.`place`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`place` (
+CREATE TABLE IF NOT EXISTS `tourguide`.`place` (
   `place_id` INT NOT NULL AUTO_INCREMENT,
   `place_name` NVARCHAR(120) NOT NULL,
   PRIMARY KEY (`place_id`),
@@ -43,9 +43,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`tour`
+-- Table `tourguide`.`tour`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`tour` (
+CREATE TABLE IF NOT EXISTS `tourguide`.`tour` (
   `tour_id` INT NOT NULL AUTO_INCREMENT,
   `difficulty` ENUM('EASY', 'MEDIUM', 'HARD', 'EXTREME') NOT NULL,
   `price` DECIMAL(6,2) NOT NULL,
@@ -63,21 +63,21 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tour` (
   INDEX `departure_place_idx` (`place_of_departure_id` ASC) VISIBLE,
   CONSTRAINT `tour_place`
     FOREIGN KEY (`place_of_destination_id`)
-    REFERENCES `mydb`.`place` (`place_id`)
+    REFERENCES `tourguide`.`place` (`place_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `departure_place`
     FOREIGN KEY (`place_of_departure_id`)
-    REFERENCES `mydb`.`place` (`place_id`)
+    REFERENCES `tourguide`.`place` (`place_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`guide`
+-- Table `tourguide`.`guide`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`guide` (
+CREATE TABLE IF NOT EXISTS `tourguide`.`guide` (
   `guide_id` INT NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(60) NOT NULL,
   `last_name` VARCHAR(60) NOT NULL,
@@ -91,9 +91,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`schedule`
+-- Table `tourguide`.`schedule`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`schedule` (
+CREATE TABLE IF NOT EXISTS `tourguide`.`schedule` (
   `schedule_id` INT NOT NULL AUTO_INCREMENT,
   `no_free_spaces` INT NOT NULL,
   `date_time` DATETIME NOT NULL,
@@ -105,21 +105,21 @@ CREATE TABLE IF NOT EXISTS `mydb`.`schedule` (
   INDEX `guide_schedule_idx` (`guide_id` ASC) VISIBLE,
   CONSTRAINT `tour_schedule`
     FOREIGN KEY (`tour_id`)
-    REFERENCES `mydb`.`tour` (`tour_id`)
+    REFERENCES `tourguide`.`tour` (`tour_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `guide_schedule`
     FOREIGN KEY (`guide_id`)
-    REFERENCES `mydb`.`guide` (`guide_id`)
+    REFERENCES `tourguide`.`guide` (`guide_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`booking`
+-- Table `tourguide`.`booking`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`booking` (
+CREATE TABLE IF NOT EXISTS `tourguide`.`booking` (
   `number_of_spots` INT NOT NULL,
   `total_price` DECIMAL(8,2) NOT NULL,
   `date_time` DATETIME NOT NULL,
@@ -132,21 +132,21 @@ CREATE TABLE IF NOT EXISTS `mydb`.`booking` (
   UNIQUE INDEX `schedule_id_UNIQUE` (`schedule_id` ASC) VISIBLE,
   CONSTRAINT `customer_booking`
     FOREIGN KEY (`customer_id`)
-    REFERENCES `mydb`.`customer` (`customer_id`)
+    REFERENCES `tourguide`.`customer` (`customer_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `schedule_booking`
     FOREIGN KEY (`schedule_id`)
-    REFERENCES `mydb`.`schedule` (`schedule_id`)
+    REFERENCES `tourguide`.`schedule` (`schedule_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`guide_rating`
+-- Table `tourguide`.`guide_rating`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`guide_rating` (
+CREATE TABLE IF NOT EXISTS `tourguide`.`guide_rating` (
   `guide_rating_id` INT NOT NULL AUTO_INCREMENT,
   `schedule_id` INT NOT NULL,
   `customer_id` INT NOT NULL,
@@ -158,21 +158,21 @@ CREATE TABLE IF NOT EXISTS `mydb`.`guide_rating` (
   INDEX `rated_guide_idx` (`schedule_id` ASC) VISIBLE,
   CONSTRAINT `customer_rate_guide`
     FOREIGN KEY (`customer_id`)
-    REFERENCES `mydb`.`customer` (`customer_id`)
+    REFERENCES `tourguide`.`customer` (`customer_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `rated_guide`
     FOREIGN KEY (`schedule_id`)
-    REFERENCES `mydb`.`schedule` (`schedule_id`)
+    REFERENCES `tourguide`.`schedule` (`schedule_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`tour_rating`
+-- Table `tourguide`.`tour_rating`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`tour_rating` (
+CREATE TABLE IF NOT EXISTS `tourguide`.`tour_rating` (
   `tour_rating_id` INT NOT NULL AUTO_INCREMENT,
   `schedule_id` INT NOT NULL,
   `customer_id` INT NOT NULL,
@@ -184,12 +184,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tour_rating` (
   INDEX `rated_tour_idx` (`schedule_id` ASC) VISIBLE,
   CONSTRAINT `customer_rate_tour`
     FOREIGN KEY (`customer_id`)
-    REFERENCES `mydb`.`customer` (`customer_id`)
+    REFERENCES `tourguide`.`customer` (`customer_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `rated_tour`
     FOREIGN KEY (`schedule_id`)
-    REFERENCES `mydb`.`schedule` (`schedule_id`)
+    REFERENCES `tourguide`.`schedule` (`schedule_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
