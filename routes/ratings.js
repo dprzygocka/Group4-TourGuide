@@ -4,7 +4,7 @@ const { Rating } = require('../models/Rating');
 
 router.get('/api/mysql/ratings', (req, res) => {
     const ratingType = req.query.ratingType; //path variable
-    if (!ratingType || ratingType !== 'guide_rating' || ratingType !== 'tour_rating') {
+    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
@@ -19,7 +19,7 @@ router.get('/api/mysql/ratings', (req, res) => {
                     //create new object
                     ratings.push(new Rating(rating[`${ratingType}_id`], rating.schedule_id, rating.customer_id, rating.rating, rating.comment));
                 }
-                res.send(tours);
+                res.send(ratings);
             } else {
                 res.send({
                     message: 'No results',
@@ -32,7 +32,7 @@ router.get('/api/mysql/ratings', (req, res) => {
 
 router.get('/api/mysql/ratings/:rating_id', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType || ratingType !== 'guide_rating' || ratingType !== 'tour_rating') {
+    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
