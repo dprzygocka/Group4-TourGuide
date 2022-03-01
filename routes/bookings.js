@@ -25,10 +25,10 @@ router.get('/api/mysql/bookings', (req, res) => {
     });
 });
 
-router.get('/api/mysql/bookings/:booking_id', (req, res) => {
+router.get('/api/mysql/bookings/:schedule_id/:customer_id', (req, res) => {
     pool.getConnection((err, db) => {
-        let query = `SELECT * FROM booking WHERE booking_id = ?`;
-        db.query(query, [req.params.booking_id], (error, result, fields) => {
+        let query = 'SELECT booking.*, customer.first_name, customer.last_name FROM booking join customer on booking.customer_id = customer.customer_id WHERE booking.schedule_id = ? AND booking.customer_id = ?;';
+        db.query(query, [req.params.schedule_id, req.params.customer_id], (error, result, fields) => {
             if (result && result.length) {
                 res.send(new Booking(result[0].number_of_spots, result[0].total_price, result[0].date_time, new Customer(result[0].customer_id, result[0].first_name, result[0].last_name), new Schedule(result[0].schedule_id)));
             } else {
