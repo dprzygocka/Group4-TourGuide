@@ -1,5 +1,5 @@
 class Tour {
-    constructor(id, difficulty, price, duration, numberOfSpots, ageLimit, distance, rating, description, placeOfDeparture, placeOfDestination){
+    constructor(id, price, duration, numberOfSpots, difficulty, ageLimit, placeOfDeparture, distance, description, rating, placeOfDestination){
         this.id = id;
         this.price = price;
         this.duration = duration;
