@@ -64,7 +64,7 @@ router.post('/api/mysql/schedules', (req, res) => {
 
 router.delete('/api/mysql/schedules/:schedule_id', (req, res) => {
     pool.getConnection((err, db) => {
-        let query = 'DELETE * FROM schedule WHERE schedule_id = ?';
+        let query = 'DELETE FROM schedule WHERE schedule_id = ?;';
         db.query(query, [req.params.schedule_id], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({

@@ -41,8 +41,6 @@ router.get('/api/mysql/tours/:tour_id', (req, res) => {
 
 router.post('/api/mysql/tours', (req, res) => {
     pool.getConnection((err, db) => {
-        console.log(req);
-        console.log(req.body.difficulty, req.body.price, req.body.duration, req.body.numberOfSpots, req.body.ageLimit, req.body.distance, req.body.description, req.body.placeOfDeparture, req.body.placeOfDestination);
         let query = 'INSERT INTO tour (difficulty, price, duration, number_of_spots, age_limit, distance, description, place_of_departure_id, place_of_destination_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
         db.query(query, [req.body.difficulty, req.body.price, req.body.duration, req.body.numberOfSpots, req.body.ageLimit, req.body.distance, req.body.description, req.body.placeOfDeparture, req.body.placeOfDestination], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
@@ -62,7 +60,7 @@ router.post('/api/mysql/tours', (req, res) => {
 
 router.delete('/api/mysql/tours/:tour_id', (req, res) => {
     pool.getConnection((err, db) => {
-        let query = 'DELETE * FROM tour WHERE tour_id = ?';
+        let query = 'DELETE FROM tourguide.tour WHERE tour_id = ?;';
         db.query(query, [req.params.tour_id], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({
@@ -80,8 +78,7 @@ router.delete('/api/mysql/tours/:tour_id', (req, res) => {
 
 router.put('/api/mysql/tours/:tour_id', (req, res) => {
     pool.getConnection((err, db) => {
-        console.log(req.body.difficulty);
-        let query = 'UPDATE tour SET difficulty = ?, price = ?, duration = ?, number_of_spots = ?, age_limit = ?, distance = ?, description = ?, place_of_departure_id = ?, place_of_destination_id = ? WHERE tour_id = ?';
+        let query = 'UPDATE tour SET difficulty = ?, price = ?, duration = ?, number_of_spots = ?, age_limit = ?, distance = ?, description = ?, place_of_departure_id = ?, place_of_destination_id = ? WHERE tour_id = ?;';
         db.query(query, [req.body.difficulty, req.body.price, req.body.duration, req.body.numberOfSpots, req.body.ageLimit, req.body.distance, req.body.description, req.body.placeOfDeparture, req.body.placeOfDestination, req.params.tour_id], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({
@@ -100,18 +97,16 @@ router.put('/api/mysql/tours/:tour_id', (req, res) => {
 //update one field
 router.patch('/api/mysql/tours/:tour_id', (req, res) => {
     const fieldName = req.body.fieldName;
-    console.log(fieldName);
     const fieldValue = req.body.fieldValue;
-    console.log(fieldValue);
     //we can restrict fields to update here
-    if (!fieldName || fieldName === 'tour_id' || fieldValue ) {
+    if (!fieldName || fieldName === 'tour_id' || !fieldValue ) {
         res.send({
             message: 'Nothing to update',
         });
         return;
     }
     pool.getConnection((err, db) => {
-        let query = `UPDATE tour SET ${fieldName} = ? WHERE tour_id = ?`;
+        let query = `UPDATE tour SET ${fieldName} = ? WHERE tour_id = ?;`;
         db.query(query, [fieldValue, req.params.tour_id], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({

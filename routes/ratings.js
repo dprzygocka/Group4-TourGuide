@@ -55,14 +55,14 @@ router.get('/api/mysql/ratings/:rating_id', (req, res) => {
 
 router.post('/api/mysql/ratings', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType || ratingType !== 'guide_rating' || ratingType !== 'tour_rating') {
+    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
         return;
     }
     pool.getConnection((err, db) => {
-        let query = `INSERT INTO ${ratingType} (schedule_id, customer_id, rating, comment) VALUES (?, ?, ?, ?)`;
+        let query = `INSERT INTO ${ratingType} (schedule_id, customer_id, rating, comment) VALUES (?, ?, ?, ?);`;
         db.query(query, [req.body.scheduleId, req.body.customerId, req.body.rating, req.body.comment], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({
@@ -81,14 +81,14 @@ router.post('/api/mysql/ratings', (req, res) => {
 
 router.delete('/api/mysql/ratings/:rating_id', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType || ratingType !== 'guide_rating' || ratingType !== 'tour_rating') {
+    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
         return;
     }
     pool.getConnection((err, db) => {
-        let query = `DELETE * FROM ${ratingType} WHERE tour_id = ?`;
+        let query = `DELETE FROM ${ratingType} WHERE ${ratingType}_id = ?;`;
         db.query(query, [req.params.rating_id], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({
@@ -106,7 +106,7 @@ router.delete('/api/mysql/ratings/:rating_id', (req, res) => {
 
 router.put('/api/mysql/ratings/:rating_id', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType || ratingType !== 'guide_rating' || ratingType !== 'tour_rating') {
+    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
@@ -132,7 +132,7 @@ router.put('/api/mysql/ratings/:rating_id', (req, res) => {
 //update one field
 router.patch('/api/mysql/ratings/:rating_id', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType || ratingType !== 'guide_rating' || ratingType !== 'tour_rating') {
+    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
@@ -142,7 +142,7 @@ router.patch('/api/mysql/ratings/:rating_id', (req, res) => {
     const fieldName = req.body.fieldName;
     const fieldValue = req.body.fieldValue;
     //we can restrict fields to update here
-    if (!fieldName || fieldName.includes("rating_id") || fieldValue ) {
+    if (!fieldName || fieldName.includes("rating_id") || !fieldValue ) {
         res.send({
             message: 'Nothing to update',
         });
