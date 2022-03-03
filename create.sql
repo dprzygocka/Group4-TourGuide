@@ -65,13 +65,13 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`tour` (
   CONSTRAINT `tour_place`
     FOREIGN KEY (`place_of_destination_id`)
     REFERENCES `tourguide`.`place` (`place_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
   CONSTRAINT `departure_place`
     FOREIGN KEY (`place_of_departure_id`)
     REFERENCES `tourguide`.`place` (`place_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -108,12 +108,12 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`schedule` (
     FOREIGN KEY (`tour_id`)
     REFERENCES `tourguide`.`tour` (`tour_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON UPDATE CASCADE,
   CONSTRAINT `guide_schedule`
     FOREIGN KEY (`guide_id`)
     REFERENCES `tourguide`.`guide` (`guide_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -135,13 +135,13 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`booking` (
   CONSTRAINT `customer_booking`
     FOREIGN KEY (`customer_id`)
     REFERENCES `tourguide`.`customer` (`customer_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `schedule_booking`
     FOREIGN KEY (`schedule_id`)
     REFERENCES `tourguide`.`schedule` (`schedule_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -161,13 +161,13 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`guide_rating` (
   CONSTRAINT `customer_rate_guide`
     FOREIGN KEY (`customer_id`)
     REFERENCES `tourguide`.`customer` (`customer_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
   CONSTRAINT `rated_guide`
     FOREIGN KEY (`schedule_id`)
     REFERENCES `tourguide`.`schedule` (`schedule_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -187,13 +187,13 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`tour_rating` (
   CONSTRAINT `customer_rate_tour`
     FOREIGN KEY (`customer_id`)
     REFERENCES `tourguide`.`customer` (`customer_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
   CONSTRAINT `rated_tour`
     FOREIGN KEY (`schedule_id`)
     REFERENCES `tourguide`.`schedule` (`schedule_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
