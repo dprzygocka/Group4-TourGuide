@@ -1049,7 +1049,7 @@ INSERT INTO tour (difficulty, price, duration, number_of_spots, age_limit, dista
 ("HARD", 682.42, 74, 3, 5, 26, "quam a felis ullamcorper viverra. Maecenas iaculis aliquet diam. Sed diam lorem, auctor quis, tristique ac, eleifend vitae, erat. Vivamus nisi. Mauris nulla. Integer urna. Vivamus", 42, 110);
 
 -- schedule inserts
-INSERT INTO schedule (date_time, tour_id, guide_id) VALUES 
+INSERT INTO schedule (schedule_date_time, tour_id, guide_id) VALUES 
 ("2022-09-10 02:22:43", 82, 364),
 ("2025-09-18 00:04:00", 58, 166),
 ("2024-04-26 06:10:36", 284, 3),
@@ -2054,7 +2054,7 @@ INSERT INTO customer (first_name, last_name, email, phone, password) VALUES
 ("Chester", "Hobbs", "chester-hobbs6068@icloud.net", "07 44 79 20 44", "$2b$15$P/humcVdtGlj2GyDeEpjz.tEl/P/uIF/QzK3KJYJS7BC78afZAnVu");
 
 
-INSERT INTO booking (number_of_spots, date_time, customer_id, schedule_id) VALUES 
+INSERT INTO booking (number_of_spots, booking_date_time, customer_id, schedule_id) VALUES 
 (2, "2020-08-15 14:45:56", 126, 43),
 (4, "2015-09-28 23:36:47", 171, 203),
 (1, "2010-03-22 18:03:34", 185, 79),

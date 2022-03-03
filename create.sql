@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`tour` (
   `distance` DECIMAL(4,1) NOT NULL,
   `rating` DECIMAL(3,2) NULL,
   `description` NVARCHAR(510) NOT NULL,
-  `place_of_departure_id` INT NOT NULL,
-  `place_of_destination_id` INT NOT NULL,
+  `place_of_departure_id` INT NULL,
+  `place_of_destination_id` INT NULL,
   PRIMARY KEY (`tour_id`),
   UNIQUE INDEX `tour_id_UNIQUE` (`tour_id` ASC) VISIBLE,
   INDEX `tour_place_idx` (`place_of_destination_id` ASC) VISIBLE,
@@ -151,7 +151,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `tourguide`.`guide_rating` (
   `guide_rating_id` INT NOT NULL AUTO_INCREMENT,
   `schedule_id` INT NOT NULL,
-  `customer_id` INT NOT NULL,
+  `customer_id` INT NULL,
   `rating` DECIMAL(2,1) NOT NULL,
   `comment` NVARCHAR(510) NULL,
   PRIMARY KEY (`guide_rating_id`),
@@ -177,7 +177,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `tourguide`.`tour_rating` (
   `tour_rating_id` INT NOT NULL AUTO_INCREMENT,
   `schedule_id` INT NOT NULL,
-  `customer_id` INT NOT NULL,
+  `customer_id` INT NULL,
   `rating` DECIMAL(2,1) NOT NULL,
   `comment` NVARCHAR(510) NULL,
   PRIMARY KEY (`tour_rating_id`),
