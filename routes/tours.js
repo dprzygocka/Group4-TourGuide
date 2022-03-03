@@ -10,7 +10,7 @@ router.get('/api/mysql/tours', (req, res) => {
                 const tours = [];
                 for (const tour of result) {
                     //create new object
-                    tours.push(new Tour(tour.tour_id, tour.price, tour.duration, tour.number_of_spots, tour.difficulty, tour.age_limit, tour.placeOfDeparture, tour.distance, tour.description, tour.rating, tour.placeOfDestination));
+                    tours.push(new Tour(tour.tour_id, tour.price, tour.duration, tour.number_of_spots, tour.difficulty, tour.age_limit, tour.place_of_departure_id, tour.distance, tour.description, tour.rating, tour.place_of_destination_id, tour.is_active));
                 }
                 res.send(tours);
             } else {
@@ -28,7 +28,7 @@ router.get('/api/mysql/tours/:tour_id', (req, res) => {
         let query = 'SELECT * FROM tour WHERE tour_id = ?';
         db.query(query, [req.params.tour_id], (error, result, fields) => {
             if (result && result.length) {
-                res.send(new Tour(result[0].tour_id, result[0].price, result[0].duration, result[0].number_of_spots, result[0].difficulty, result[0].age_limit, result[0].placeOfDeparture, result[0].distance, result[0].description, result[0].rating, result[0].placeOfDestination));
+                res.send(new Tour(result[0].tour_id, result[0].price, result[0].duration, result[0].number_of_spots, result[0].difficulty, result[0].age_limit, result[0].place_of_departure_id, result[0].distance, result[0].description, result[0].rating, result[0].place_of_destination_id, result[0].is_active));
             } else {
                 res.send({
                     message: 'No results',
@@ -78,8 +78,8 @@ router.delete('/api/mysql/tours/:tour_id', (req, res) => {
 
 router.put('/api/mysql/tours/:tour_id', (req, res) => {
     pool.getConnection((err, db) => {
-        let query = 'UPDATE tour SET difficulty = ?, price = ?, duration = ?, number_of_spots = ?, age_limit = ?, distance = ?, description = ?, place_of_departure_id = ?, place_of_destination_id = ? WHERE tour_id = ?;';
-        db.query(query, [req.body.difficulty, req.body.price, req.body.duration, req.body.numberOfSpots, req.body.ageLimit, req.body.distance, req.body.description, req.body.placeOfDeparture, req.body.placeOfDestination, req.params.tour_id], (error, result, fields) => {
+        let query = 'UPDATE tour SET difficulty = ?, price = ?, duration = ?, number_of_spots = ?, age_limit = ?, distance = ?, description = ?, place_of_departure_id = ?, place_of_destination_id = ?, is_active = ? WHERE tour_id = ?;';
+        db.query(query, [req.body.difficulty, req.body.price, req.body.duration, req.body.numberOfSpots, req.body.ageLimit, req.body.distance, req.body.description, req.body.placeOfDeparture, req.body.placeOfDestination, req.body.isActive, req.params.tour_id], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({
                     message: 'Tour successfully updated.',
