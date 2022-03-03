@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`guide` (
   `email` VARCHAR(127) NOT NULL,
   `phone` VARCHAR(20) NOT NULL,
   `rating` DECIMAL(3,2) NULL,
+  `contract_end_date` DATE NOT NULL,
   PRIMARY KEY (`guide_id`),
   UNIQUE INDEX `guide_id_UNIQUE` (`guide_id` ASC) VISIBLE)
 ENGINE = InnoDB;
