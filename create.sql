@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`customer` (
   `first_name` VARCHAR(60) NOT NULL,
   `last_name` VARCHAR(60) NOT NULL,
   `email` VARCHAR(127) NOT NULL,
-  `password` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(100) NULL,
   `phone` VARCHAR(20) NOT NULL,
   PRIMARY KEY (`customer_id`),
   UNIQUE INDEX `customer_id_UNIQUE` (`customer_id` ASC) VISIBLE,
