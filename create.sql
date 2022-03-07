@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`schedule` (
   `number_of_free_spaces` INT NULL,
   `schedule_date_time` DATETIME NOT NULL,
   `tour_id` INT NOT NULL,
-  `guide_id` INT NOT NULL,
+  `guide_id` INT NULL,
   PRIMARY KEY (`schedule_id`),
   INDEX `tour_schedule_idx` (`tour_id` ASC) VISIBLE,
   UNIQUE INDEX `schedule_id_UNIQUE` (`schedule_id` ASC) VISIBLE,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`schedule` (
   CONSTRAINT `guide_schedule`
     FOREIGN KEY (`guide_id`)
     REFERENCES `tourguide`.`guide` (`guide_id`)
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
