@@ -3559,5 +3559,9 @@ INSERT INTO tour_rating (schedule_id, customer_id, rating, comment) VALUES
 (284, 75, 3.8, "cursus purus. Nullam scelerisque neque sed sem egestas"),
 (76, 203, 1.3, "Donec non justo. Proin non massa non ante bibendum ullamcorper. Duis cursus, diam at pretium aliquet, metus urna convallis erat, eget tincidunt dui augue eu tellus. Phasellus elit pede, malesuada vel, venenatis vel, faucibus id, libero. Donec consectetuer mauris id sapien. Cras dolor dolor, tempus non, lacinia at,"),
 (180, 29, 3.8, "dolor, tempus non, lacinia at, iaculis quis, pede. Praesent eu dui. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eget magna. Suspendisse tristique neque venenatis lacus. Etiam bibendum fermentum metus. Aenean sed pede");
-
+/*
 SELECT * FROM booking JOIN schedule on booking.schedule_id = schedule.schedule_id WHERE booking_date_time > schedule_date_time;
+SELECT ROUND(AVG(rating),2) FROM guide_rating JOIN schedule ON schedule.schedule_id = guide_rating.schedule_id WHERE guide_id = 130;
+SELECT * FROM schedule WHERE schedule_id = 284;
+(SELECT t.price FROM booking JOIN schedule AS s ON s.schedule_id = booking.schedule_id JOIN tour AS t ON s.tour_id = t.tour_id WHERE booking.schedule_id = 3);
+SELECT * FROM booking;*/
