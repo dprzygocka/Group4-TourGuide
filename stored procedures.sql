@@ -85,9 +85,9 @@ CREATE TRIGGER update_number_of_spots
 	BEFORE INSERT ON booking
 	FOR EACH ROW BEGIN
 		DECLARE free_spots INT;
-        SET free_spots = (SELECT number_of_free_spaces FROM schedule WHERE schedule.schedule_id = NEW.schedule_id);
+        SET free_spots = (SELECT number_of_free_spots FROM schedule WHERE schedule.schedule_id = NEW.schedule_id);
 		IF (free_spots >= NEW.number_of_spots) THEN 
-			UPDATE schedule SET number_of_free_spaces = free_spots - NEW.number_of_spots
+			UPDATE schedule SET number_of_free_spots = free_spots - NEW.number_of_spots
 			WHERE schedule_id = NEW.schedule_id;
 		ELSE 
 			SIGNAL SQLSTATE '45000' 
@@ -102,7 +102,7 @@ DELIMITER $$
 CREATE TRIGGER set_number_of_spots
 	BEFORE INSERT ON schedule
 	FOR EACH ROW BEGIN
-		SET NEW.number_of_free_spaces = (SELECT number_of_spots FROM tour WHERE tour_id = NEW.tour_id);
+		SET NEW.number_of_free_spots = (SELECT number_of_spots FROM tour WHERE tour_id = NEW.tour_id);
 	END $$ 
 DELIMITER ;
 
@@ -150,7 +150,7 @@ DELIMITER ;
 
 CREATE OR REPLACE VIEW tour_place_schedule AS
 	SELECT place.place_name AS destination, tour.price, tour.description, tour.rating, 
-			schedule.number_of_free_spaces, schedule.schedule_date_time,
+			schedule.number_of_free_spots, schedule.schedule_date_time,
             guide.first_name, guide.last_name
     FROM tour 
 		JOIN place ON tour.place_of_departure_id = place.place_id

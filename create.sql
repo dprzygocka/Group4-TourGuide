@@ -98,7 +98,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tourguide`.`schedule` (
   `schedule_id` INT NOT NULL AUTO_INCREMENT,
-  `number_of_free_spaces` INT NULL,
+  `number_of_free_spots` INT NULL,
   `schedule_date_time` DATETIME NOT NULL,
   `tour_id` INT NOT NULL,
   `guide_id` INT NULL,
