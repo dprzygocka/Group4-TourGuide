@@ -91,7 +91,7 @@ CREATE TRIGGER update_number_of_spots
 			WHERE schedule_id = NEW.schedule_id;
 		ELSE 
 			SIGNAL SQLSTATE '45000' 
-			SET MESSAGE_TEXT = "ERROR: Not enough free spots ";
+			SET MESSAGE_TEXT = "ERROR: Not enough free spots";
 		END IF;
 	END $$ 
 DELIMITER ;
@@ -197,7 +197,7 @@ CREATE TRIGGER check_booking_insert
 	END $$
 DELIMITER ;
 
-INSERT INTO booking (number_of_spots, booking_date_time, customer_id, schedule_id) VALUES (5, "2024-4-16 4:40:34", 352, 1);
+-- INSERT INTO booking (number_of_spots, booking_date_time, customer_id, schedule_id) VALUES (5, "2024-4-16 4:40:34", 352, 1);
 
 -- works
 DROP TRIGGER IF EXISTS tour_change_is_active;
@@ -256,8 +256,6 @@ CREATE OR REPLACE VIEW guide_rating_view AS
         JOIN guide_rating ON schedule.schedule_id = guide_rating.schedule_id;
         
 SELECT * FROM guide_rating_view; 
-    
-    
     
     
 -- SELECT * FROM invoices_with_balance;
