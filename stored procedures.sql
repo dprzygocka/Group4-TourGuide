@@ -262,18 +262,43 @@ SELECT * FROM guide_rating_view;
 
 -- EXPLAIN SELECT*FROMcustomersWHEREstate='WV';
 -- price, date, rating, password
+
+EXPLAIN SELECT * FROM schedule WHERE schedule.schedule_date_time > "2025-11-9 9:12:24"; -- 500,33.33
+CREATE INDEX idx_date ON schedule (schedule_date_time); -- 76, 100
+DROP INDEX idx_date ON schedule;
+
+EXPLAIN SELECT * FROM tour WHERE price < 200; -- 500 33.33
+CREATE INDEX idx_price ON tour (price); -- 13, 100
+DROP INDEX idx_price ON tour; 
+
+CREATE INDEX idx_password ON customer (password);
+EXPLAIN SELECT password FROM customer WHERE password = '$2b$15$PGfdEXxNY2M.OSsh1mjIFuy9Tg32Z3Cc5QkKPGIW5f.DNVXpGYwOa'; -- HvS77rnNQL2xCD -- 500 before after 1 row
+
+EXPLAIN SELECT tour.price, tour.rating, place.place_name, schedule.schedule_date_time FROM tour JOIN place ON tour.place_of_destination_id = place.place_id JOIN schedule ON schedule.tour_id = tour.tour_id WHERE tour.price < 100;
+-- schedule 500 33, tour 1, 100, place 1, 100, schedule 19 100
+CREATE INDEX idx_tour_rating_price ON tour (price, rating);
+DROP INDEX idx_tour_rating_price ON tour;
+
+
 SELECT * FROM booking;
 SELECT * FROM tour WHERE rating > 2;
 EXPLAIN SELECT * FROM tour ORDER BY rating LIMIT 10; -- 500, 33.33,  500 100
-CREATE INDEX idx_rating ON tour (rating); -- 500, 32.40, 22, 100,   10, 100
+CREATE INDEX idx_tour_rating ON tour (rating); -- 500, 32.40, 22, 100,   10, 100
 DROP INDEX idx_rating ON tour;
- SELECT * FROM schedule WHERE schedule.schedule_date_time > "2017-11-9 9:12:24";
-EXPLAIN SELECT * FROM schedule WHERE schedule.schedule_date_time > "2017-11-9 9:12:24"; -- 500,33.33
-CREATE INDEX idx_date ON schedule (schedule_date_time); -- 500, 41.00
-EXPLAIN SELECT * FROM schedule WHERE schedule.schedule_date_time > "2017-11-9 9:12:24" ORDER BY schedule.schedule_date_time DESC;
-DROP INDEX idx_date ON schedule;
-EXPLAIN SELECT * FROM tour WHERE price < 50; -- 500 33.33
-CREATE INDEX idx_price ON tour (price); -- 13, 100
+SHOW STATUS LIKE'Last_Query_Cost'; -- 203, 25
+
+EXPLAIN SELECT guide_id, rating FROM guide ORDER BY rating LIMIT 10; -- 500, 33.33,  500 100
+SELECT guide_id, rating FROM guide ORDER BY rating LIMIT 10; 
+CREATE INDEX idx_guide_rating ON guide (rating);
+DROP INDEX idx_guide_rating ON guide;
+-- index doesnt make sense because we need to also query name and at least phone to have enough info
+
+UPDATE tour set is_active = 0 where tour_id < 50;
+-- CREATE INDEX idx_is_active ON tour (is_active);
+EXPLAIN SELECT * FROM tour WHERE is_active = 1; -- HvS77rnNQL2xCD -- 500, 10 before after 1 row
+-- not using index cause we have more active ones than inactive ones and query wont use it
+drop index idx_is_active ON tour;
+
 
 EXPLAIN UPDATE tour SET rating = 5 WHERE tour_id = 5; -- 1 100
 
