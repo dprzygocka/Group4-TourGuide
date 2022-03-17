@@ -500,7 +500,8 @@ INSERT INTO guide (first_name, last_name, license, phone, email, rating, contrac
 ('Cally','Jarvis','XYR75URI1IP','03 36 55 77 55','non.dapibus@outlook.edu',1, "2032-09-10"),
 ('Dane','Head','DNN48NMT8DB','08 64 18 55 38','sem@outlook.com',4, "2032-09-10"),
 ('Maya','Hodge','LJW55WPE8DE','06 36 55 47 31','lectus.rutrum@google.com',5, "2032-09-10");
--- insert for places WIP
+
+-- insert for places
 INSERT INTO place (place_name) VALUES ('Waterfall Skok'), ('Peak Velky Rozsutec'), ('Velka Fatra'),
  ('Low Tatras - Chopok - Dumbier'), ('High Tatras - Peak Koprovsky stit'),
 ('Slovak Paradise - gorge Sucha Bela'), ('Krivan'), ('Small Fatra - Prielom Hornadu'), ("The Windy Slopes"), ("The Light Tops"), 
@@ -544,7 +545,6 @@ INSERT INTO place (place_name) VALUES ('Waterfall Skok'), ('Peak Velky Rozsutec'
 ("Laughing Squirrel Woods"), ("Savanna Eagle Grove"), ("Gamtou Covert"), ("Petrocier Timberland"), ("Sinris Wood"), 
 ("Trichill Wood"), ("Mighty Glade Wilds"), ("Whimsical Spruce Woodland"), ("Curious Forest"), ("Deep Wood"), 
 ("Laughing Mole Wood"), ("Lesser Porcupine Thicket"), ("Picmiota Covert"), ("Conrane Wilds"), ("Vauxtara Woods"), ("Stelry Grove");
--- SELECT COUNT(*) FROM place;
 
 INSERT INTO tour (difficulty, price, duration, number_of_spots, age_limit, distance, description, place_of_departure_id, place_of_destination_id, is_active) VALUES 
 ("EASY", 1521.62, 52, 46, 15, 65, "augue. Sed molestie. Sed id risus quis diam luctus lobortis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Mauris ut quam vel sapien imperdiet ornare. In faucibus. Morbi vehicula. Pellentesque tincidunt tempus risus.", 226, 103, 1),
@@ -3559,9 +3559,3 @@ INSERT INTO tour_rating (schedule_id, customer_id, rating, comment) VALUES
 (284, 75, 3.8, "cursus purus. Nullam scelerisque neque sed sem egestas"),
 (76, 203, 1.3, "Donec non justo. Proin non massa non ante bibendum ullamcorper. Duis cursus, diam at pretium aliquet, metus urna convallis erat, eget tincidunt dui augue eu tellus. Phasellus elit pede, malesuada vel, venenatis vel, faucibus id, libero. Donec consectetuer mauris id sapien. Cras dolor dolor, tempus non, lacinia at,"),
 (180, 29, 3.8, "dolor, tempus non, lacinia at, iaculis quis, pede. Praesent eu dui. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eget magna. Suspendisse tristique neque venenatis lacus. Etiam bibendum fermentum metus. Aenean sed pede");
-/*
-SELECT * FROM booking JOIN schedule on booking.schedule_id = schedule.schedule_id WHERE booking_date_time > schedule_date_time;
-SELECT ROUND(AVG(rating),2) FROM guide_rating JOIN schedule ON schedule.schedule_id = guide_rating.schedule_id WHERE guide_id = 130;
-SELECT * FROM schedule WHERE schedule_id = 284;
-(SELECT t.price FROM booking JOIN schedule AS s ON s.schedule_id = booking.schedule_id JOIN tour AS t ON s.tour_id = t.tour_id WHERE booking.schedule_id = 3);
-SELECT * FROM booking;*/

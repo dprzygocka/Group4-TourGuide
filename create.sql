@@ -129,11 +129,9 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`booking` (
   `customer_id` INT NOT NULL,
   `schedule_id` INT NOT NULL,
   INDEX `customer_booking_idx` (`customer_id` ASC) VISIBLE,
-  INDEX `schedule_booking_idx` (`schedule_id` ASC) VISIBLE,
+  INDEX `schedule_booking_idx` (`schedule_id` ASC) VISIBLE, -- ask about composite, this doesnt seem necessary but the one above does?
   PRIMARY KEY (`schedule_id`, `customer_id`),
-  UNIQUE (`schedule_id`, `customer_id`),
-  -- UNIQUE INDEX `customer_id_UNIQUE` (`customer_id` ASC) VISIBLE,
-  -- UNIQUE INDEX `schedule_id_UNIQUE` (`schedule_id` ASC) VISIBLE,
+  UNIQUE (`schedule_id`, `customer_id`), -- ask cause same as primary key
   CONSTRAINT `customer_booking`
     FOREIGN KEY (`customer_id`)
     REFERENCES `tourguide`.`customer` (`customer_id`)
