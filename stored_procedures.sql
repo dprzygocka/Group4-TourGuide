@@ -153,6 +153,15 @@ CREATE TRIGGER delete_tour_ratings
 	END $$ 
 DELIMITER ;
 
+DROP TRIGGER IF EXISTS set_schedule_tourid_to_defualt;
+DELIMITER $$
+CREATE TRIGGER set_schedule_tourid_to_defualt
+	BEFORE DELETE ON tour
+	FOR EACH ROW BEGIN
+		UPDATE schedule SET tour_id = DEFAULT WHERE tour_id = OLD.tour_id;
+	END $$ 
+DELIMITER ;
+
 -- event to delete old bookings
 DROP EVENT IF EXISTS delete_old_schedules;
 DELIMITER $$

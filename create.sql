@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`schedule` (
   `schedule_id` INT NOT NULL AUTO_INCREMENT,
   `number_of_free_spots` INT NULL,
   `schedule_date_time` DATETIME NOT NULL,
-  `tour_id` INT NOT NULL,
+  `tour_id` INT NOT NULL DEFAULT -1,
   `guide_id` INT NULL,
   PRIMARY KEY (`schedule_id`),
   INDEX `tour_schedule_idx` (`tour_id` ASC) VISIBLE,

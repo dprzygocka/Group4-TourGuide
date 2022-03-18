@@ -546,6 +546,9 @@ INSERT INTO place (place_name) VALUES ('Waterfall Skok'), ('Peak Velky Rozsutec'
 ("Trichill Wood"), ("Mighty Glade Wilds"), ("Whimsical Spruce Woodland"), ("Curious Forest"), ("Deep Wood"), 
 ("Laughing Mole Wood"), ("Lesser Porcupine Thicket"), ("Picmiota Covert"), ("Conrane Wilds"), ("Vauxtara Woods"), ("Stelry Grove");
 
+INSERT INTO tour (tour_id, difficulty, price, duration, number_of_spots, age_limit, distance, description, place_of_departure_id, place_of_destination_id, is_active) VALUES 
+(-1, "EASY", 0, 0, 0, 0, 0, "Placeholder", NULL, NULL, 0);
+
 INSERT INTO tour (difficulty, price, duration, number_of_spots, age_limit, distance, description, place_of_departure_id, place_of_destination_id, is_active) VALUES 
 ("EASY", 1521.62, 52, 46, 15, 65, "augue. Sed molestie. Sed id risus quis diam luctus lobortis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Mauris ut quam vel sapien imperdiet ornare. In faucibus. Morbi vehicula. Pellentesque tincidunt tempus risus.", 226, 103, 1),
 ("MEDIUM", 1016.20, 90, 35, 18, 94, "egestas. Fusce aliquet magna a neque. Nullam ut nisi a odio semper cursus. Integer mollis. Integer tincidunt aliquam arcu. Aliquam ultrices", 156, 225, 1),
