@@ -19,12 +19,14 @@ DELIMITER $$
 -- starts with page 0
 CREATE PROCEDURE PaginateSort(tablename CHAR(30), sortcolumn CHAR(20), direction CHAR(4), size INT, page INT)
 BEGIN
-	SET @sql = CONCAT('SELECT * FROM ', tablename, ' ORDER BY ', sortcolumn,' ', direction, ' LIMIT ', size, ' OFFSET ', page * size);
+	SET @sql = CONCAT('SELECT * FROM "', tablename, '" ORDER BY "', sortcolumn,'" "', direction, '" LIMIT ', size, ' OFFSET ', page * size);
     PREPARE stmt1 FROM @sql;
     EXECUTE stmt1;
     DEALLOCATE PREPARE stmt1;
 END $$
 DELIMITER ;   
+    
+-- CALL PaginateSort('booking', 'total_price', 'ASC', 100, 1);    
     
 DROP PROCEDURE IF EXISTS ScheduleBetweenDates;
 DELIMITER $$ 
@@ -80,8 +82,8 @@ DELIMITER $$
 CREATE TRIGGER update_total_price
 	BEFORE INSERT ON booking
 	FOR EACH ROW BEGIN
-		SET NEW.total_price = ((SELECT t.price FROM booking JOIN schedule ON schedule.schedule_id = NEW.schedule_id JOIN tour AS t ON schedule.tour_id = t.tour_id WHERE schedule.schedule_id = NEW.schedule_id AND customer_id = NEW.customer_id LIMIT 1) * NEW.number_of_spots);
-	END $$ 
+		SET NEW.total_price = ((SELECT t.price FROM schedule JOIN tour AS t ON schedule.tour_id = t.tour_id WHERE schedule.schedule_id = NEW.schedule_id LIMIT 1) * NEW.number_of_spots);
+    END $$ 
 DELIMITER ;
 
 -- works
