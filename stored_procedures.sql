@@ -19,7 +19,7 @@ DELIMITER $$
 -- starts with page 0
 CREATE PROCEDURE PaginateSort(tablename CHAR(30), sortcolumn CHAR(20), direction CHAR(4), size INT, page INT)
 BEGIN
-	SET @sql = CONCAT('SELECT * FROM \`', tablename, '\` ORDER BY "', sortcolumn,'" ', direction, ' LIMIT ', size, ' OFFSET ', page * size);
+	SET @sql = CONCAT('SELECT * FROM ', tablename, ' ORDER BY ', sortcolumn,' ', direction, ' LIMIT ', size, ' OFFSET ', page * size);
     PREPARE stmt1 FROM @sql;
     EXECUTE stmt1;
     DEALLOCATE PREPARE stmt1;

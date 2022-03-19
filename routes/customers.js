@@ -13,7 +13,6 @@ router.get('/api/mysql/customers', (req, res) => {
     const page = req.query.page - 1 || 0;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         pool.getConnection((err, db) => {
-            console.log(sortColumn, direction, size, page);
             let query = `CALL PaginateSort(?, ?, ?, ?, ?)`;
             db.query(query, ['customer', sortColumn, direction, size, page], (error, result, fields) => {
                 if (result && result.length && result[0].length) {
