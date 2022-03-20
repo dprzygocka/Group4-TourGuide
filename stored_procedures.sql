@@ -265,6 +265,6 @@ EXPLAIN SELECT schedule.*, guide.first_name, guide.last_name, tour.difficulty, t
 -- fulltext index
 CREATE FULLTEXT INDEX idx_tour_description ON tour(description);
 -- select * from tour where match (description) against ('Sed');
--- select * from tour where description like '%Sed%';
+-- explain select * from tour where description like '%Sed%';
 -- drop index idx_tour_description ON tour;
 -- SHOW STATUS LIKE'Last_Query_Cost';
