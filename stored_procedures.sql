@@ -261,3 +261,10 @@ EXPLAIN SELECT * FROM schedule JOIN tour ON schedule.tour_id = tour.tour_id ORDE
 -- CREATE INDEX idx_rating ON tour (rating);
 EXPLAIN SELECT * FROM schedule JOIN tour ON schedule.tour_id = tour.tour_id JOIN place ON place.place_id = tour.place_of_destination_id ORDER BY place_id;
 EXPLAIN SELECT schedule.*, guide.first_name, guide.last_name, tour.difficulty, tour.duration, tour.description, place.place_name FROM schedule join guide on schedule.guide_id = guide.guide_id join tour on schedule.tour_id = tour.tour_id join place on tour.place_of_destination_id = place.place_id;
+
+-- fulltext index
+CREATE FULLTEXT INDEX idx_tour_description ON tour(description);
+-- select * from tour where match (description) against ('Sed');
+-- select * from tour where description like '%Sed%';
+-- drop index idx_tour_description ON tour;
+-- SHOW STATUS LIKE'Last_Query_Cost';

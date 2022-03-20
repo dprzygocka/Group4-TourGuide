@@ -55,6 +55,31 @@ router.get('/api/mysql/tours/:tour_id', (req, res) => {
     });
 });
 
+router.get('/api/mysql/tours/description/:search_keys', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = `select * from tour where match (description) against (?);`;
+        db.query(query, [req.params.search_keys], (error, result, fields) => {
+            if (result && result.length) {
+                const tours = [];
+                for (const tour of result) {
+                    //create new object
+                    tours.push(new Tour(tour.tour_id, tour.price, tour.duration, tour.number_of_spots, tour.difficulty, tour.age_limit, tour.place_of_departure_id, tour.distance, tour.description, tour.rating, tour.place_of_destination_id, tour.is_active));
+                }
+                res.send(tours);
+            } else if (error) {
+                res.send({
+                    message: error.sqlMessage,
+                });
+            } else {
+                res.send({
+                    message: 'No results',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 router.post('/api/mysql/tours', (req, res) => {
     pool.getConnection((err, db) => {
         let query = 'INSERT INTO tour (difficulty, price, duration, number_of_spots, age_limit, distance, description, place_of_departure_id, place_of_destination_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
