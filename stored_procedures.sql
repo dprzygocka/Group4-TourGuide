@@ -84,6 +84,25 @@ CREATE TRIGGER update_total_price
     END $$ 
 DELIMITER ;
 
+-- booking write into audit table
+DROP TRIGGER IF EXISTS audit_booking_insert;
+DELIMITER $$
+CREATE TRIGGER audit_booking_insert
+	AFTER INSERT ON booking
+	FOR EACH ROW BEGIN
+		INSERT INTO booking_audit (customer_id, schedule_id, column_name, new_value, action_type, done_at) VALUES (NEW.customer_id, NEW.schedule_id, 'total_price', NEW.total_price ,'insert', NOW());
+    END $$ 
+DELIMITER ;
+
+-- booking delete for audit 
+DROP TRIGGER IF EXISTS audit_booking_delete;
+DELIMITER $$
+CREATE TRIGGER audit_booking_delete
+	AFTER DELETE ON booking
+	FOR EACH ROW BEGIN
+		INSERT INTO booking_audit (customer_id, schedule_id, column_name, new_value, action_type, done_at) VALUES (OLD.customer_id, OLD.schedule_id, 'total_price', OLD.total_price ,'delete', NOW());
+    END $$ 
+DELIMITER ;
 -- works
 DROP TRIGGER IF EXISTS update_number_of_spots;
 DELIMITER $$
@@ -131,7 +150,7 @@ CREATE TRIGGER tour_change_is_active
 	AFTER DELETE ON place
 	FOR EACH ROW BEGIN
 		UPDATE tour set is_active = 0 
-        WHERE tour.place_of_departure_id = OLD.place_id AND tour.place_of_destination_id = OLD.place_id;
+        WHERE tour.place_of_departure_id = OLD.place_id OR tour.place_of_destination_id = OLD.place_id;
 	END $$ 
 DELIMITER ;
 
@@ -153,12 +172,53 @@ CREATE TRIGGER delete_tour_ratings
 	END $$ 
 DELIMITER ;
 
+DROP TRIGGER IF EXISTS audit_trail_tour_insert;
+DELIMITER $$
+CREATE TRIGGER audit_trail_tour_insert
+	AFTER INSERT ON tour
+	FOR EACH ROW BEGIN
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'price', NEW.price, 'insert', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'number_of_spots', NEW.number_of_spots, 'insert', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'is_active', NEW.is_active, 'insert', NOW());
+	END $$ 
+DELIMITER ;
+
+-- trigger for updating tour fields
+DROP TRIGGER IF EXISTS tour_update;
+DELIMITER $$
+CREATE TRIGGER tour_update
+AFTER UPDATE
+ON tour FOR EACH ROW
+BEGIN
+    IF OLD.price <> NEW.price THEN
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'price', NEW.price, 'update', NOW());
+    END IF;
+	IF OLD.number_of_spots <> NEW.number_of_spots THEN
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'number_of_spots', NEW.number_of_spots, 'update', NOW());
+    END IF;
+	IF OLD.is_active <> NEW.is_active THEN
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'is_active', NEW.is_active, 'update', NOW());
+    END IF;
+END$$
+DELIMITER ;
+
 DROP TRIGGER IF EXISTS set_schedule_tourid_to_defualt;
 DELIMITER $$
 CREATE TRIGGER set_schedule_tourid_to_defualt
 	BEFORE DELETE ON tour
 	FOR EACH ROW BEGIN
 		UPDATE schedule SET tour_id = DEFAULT WHERE tour_id = OLD.tour_id;
+	END $$ 
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS audit_trail_tour_delete;
+DELIMITER $$
+CREATE TRIGGER audit_trail_tour_delete
+	AFTER DELETE ON tour
+	FOR EACH ROW BEGIN
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(OLD.tour_id, 'price', OLD.price, 'delete', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(OLD.tour_id, 'number_of_spots', OLD.number_of_spots, 'delete', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(OLD.tour_id, 'is_active', OLD.is_active, 'delete', NOW());
 	END $$ 
 DELIMITER ;
 
