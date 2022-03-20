@@ -11,8 +11,8 @@ router.get('/api/mysql/guides', (req, res) => {
     const page = req.query.page - 1 || 0;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         pool.getConnection((err, db) => {
-            let query = `CALL PaginateSort('guide', ?, ?, ?, ?);`;
-            db.query(query, [sortColumn, direction, size, page], (error, result, fields) => {
+            let query = `CALL PaginateSort(?, ?, ?, ?, ?);`;
+            db.query(query, ['guide', sortColumn, direction, size, page], (error, result, fields) => {
                 if (result && result.length && result[0].length) {
                     const guides = [];
                     for (const guide of result[0]) {
