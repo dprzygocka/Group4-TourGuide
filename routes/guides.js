@@ -1,26 +1,42 @@
 const router = require('express').Router();
 const { pool } = require('../database/connection');
+const {checkDirection, checkSortColumn} = require('../models/Utils');
 const { Guide } = require('../models/Guide');
 
 router.get('/api/mysql/guides', (req, res) => {
-    pool.getConnection((err, db) => {
-        let query = 'SELECT * FROM guide';
-        db.query(query, [], (error, result, fields) => {
-            if (result && result.length) {
-                const guides = [];
-                for (const guide of result) {
-                    //create new object
-                    guides.push(new Guide(guide.guide_id, guide.first_name, guide.last_name, guide.email, guide.phone, guide.license, guide.rating));
+    const sortColumn = req.query.sortColumn || 'guide_id';
+    const direction = req.query.direction || 'ASC';
+    const size = req.query.size || 10;
+    //paging starts from 0
+    const page = req.query.page - 1 || 0;
+    if (checkSortColumn(sortColumn) && checkDirection(direction)) {
+        pool.getConnection((err, db) => {
+            let query = `CALL PaginateSort('guide', ?, ?, ?, ?);`;
+            db.query(query, [sortColumn, direction, size, page], (error, result, fields) => {
+                if (result && result.length && result[0].length) {
+                    const guides = [];
+                    for (const guide of result[0]) {
+                        //create new object
+                        guides.push(new Guide(guide.guide_id, guide.first_name, guide.last_name, guide.email, guide.phone, guide.license, guide.rating));
+                    }
+                    res.send(guides);
+                } else if (error) {
+                    res.send({
+                        message: error.sqlMessage,
+                    });
+                } else {
+                    res.send({
+                        message: 'No results',
+                    });
                 }
-                res.send(guides);
-            } else {
-                res.send({
-                    message: 'No results',
-                });
-            }
+            });
+            db.release();
         });
-        db.release();
-    });
+    } else {
+        res.send({
+            message: `Check your input:\nsort column: ${sortColumn}\ndirection: ${direction}\nsize: ${size}\npage: ${page}\n`
+        })
+    }
 });
 
 router.get('/api/mysql/guides/:guide_id', (req, res) => {
