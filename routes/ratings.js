@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { pool } = require('../database/connection');
 const { Rating } = require('../models/Rating');
+const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 router.get('/api/mysql/ratings', (req, res) => {
     const ratingType = req.query.ratingType; //path variable
@@ -10,24 +11,39 @@ router.get('/api/mysql/ratings', (req, res) => {
         });
         return;
     }
-    pool.getConnection((err, db) => {
-        let query = `SELECT * FROM ${ratingType}`;
-        db.query(query, [], (error, result, fields) => {
-            if (result && result.length) {
-                const ratings = [];
-                for (const rating of result) {
-                    //create new object
-                    ratings.push(new Rating(rating[`${ratingType}_id`], rating.schedule_id, rating.customer_id, rating.rating, rating.comment));
+    const sortColumn = req.query.sortColumn || `${ratingType}_id`;
+    const direction = req.query.direction || 'ASC';
+    const size = req.query.size || 10;
+    //paging starts from 0
+    const page = req.query.page - 1 || 0;
+    if (checkSortColumn(sortColumn) && checkDirection(direction)) {
+        pool.getConnection((err, db) => {
+            let query = `CALL PaginateSort(?, ?, ?, ?, ?)`;
+            db.query(query, [ratingType, sortColumn, direction, size, page], (error, result, fields) => {
+                if (result && result.length && result[0].length) {
+                    const ratings = [];
+                    for (const rating of result[0]) {
+                        //create new object
+                        ratings.push(new Rating(rating[`${ratingType}_id`], rating.schedule_id, rating.customer_id, rating.rating, rating.comment));
+                    }
+                    res.send(ratings);
+                } else if (error) {
+                    res.send({
+                        message: error.sqlMessage,
+                    });
+                } else {
+                    res.send({
+                        message: 'No results',
+                    });
                 }
-                res.send(ratings);
-            } else {
-                res.send({
-                    message: 'No results',
-                });
-            }
+            });
+            db.release();
         });
-        db.release();
-    });
+    } else {
+        res.send({
+            message: `Check your input:\nsort column: ${sortColumn}\ndirection: ${direction}\nsize: ${size}\npage: ${page}\n`
+        })
+    }
 });
 
 router.get('/api/mysql/ratings/:rating_id', (req, res) => {
