@@ -74,16 +74,6 @@ CREATE TRIGGER update_tour_rating
 	END $$
 DELIMITER ;
 
--- booking total_price based on amount of people
-DROP TRIGGER IF EXISTS update_total_price;
-DELIMITER $$
-CREATE TRIGGER update_total_price
-	BEFORE INSERT ON booking
-	FOR EACH ROW BEGIN
-		SET NEW.total_price = ((SELECT t.price FROM schedule JOIN tour AS t ON schedule.tour_id = t.tour_id WHERE schedule.schedule_id = NEW.schedule_id LIMIT 1) * NEW.number_of_spots);
-    END $$ 
-DELIMITER ;
-
 -- booking write into audit table
 DROP TRIGGER IF EXISTS audit_booking_insert;
 DELIMITER $$
@@ -102,9 +92,10 @@ CREATE TRIGGER audit_booking_delete
 	FOR EACH ROW BEGIN
 		INSERT INTO booking_audit (customer_id, schedule_id, column_name, new_value, action_type, done_at) VALUES (OLD.customer_id, OLD.schedule_id, 'total_price', OLD.total_price ,'delete', NOW());
     END $$ 
-DELIMITER ;
+DELIMITE
+R ;
 -- works
-DROP TRIGGER IF EXISTS update_number_of_spots;
+/*DROP TRIGGER IF EXISTS update_number_of_spots;
 DELIMITER $$
 CREATE TRIGGER update_number_of_spots
 	BEFORE INSERT ON booking
@@ -121,6 +112,16 @@ CREATE TRIGGER update_number_of_spots
 	END $$ 
 DELIMITER ;
 
+-- booking total_price based on amount of people
+DROP TRIGGER IF EXISTS update_total_price;
+DELIMITER $$
+CREATE TRIGGER update_total_price
+	BEFORE INSERT ON booking
+	FOR EACH ROW BEGIN
+		SET NEW.total_price = ((SELECT t.price FROM schedule JOIN tour AS t ON schedule.tour_id = t.tour_id WHERE schedule.schedule_id = NEW.schedule_id LIMIT 1) * NEW.number_of_spots);
+    END $$ 
+DELIMITER ;
+*/
 DROP TRIGGER IF EXISTS set_number_of_spots;
 DELIMITER $$
 CREATE TRIGGER set_number_of_spots

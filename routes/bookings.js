@@ -42,19 +42,67 @@ router.get('/api/mysql/bookings/:schedule_id/:customer_id', (req, res) => {
 });
 
 router.post('/api/mysql/bookings', (req, res) => {
-    pool.getConnection((err, db) => {
-        let query = 'INSERT INTO booking VALUES (?, ?, ?, ?, ?)';
-        db.query(query, [req.body.numberOfSpots, req.body.totalPrice, req.body.dateTime, req.body.customerId, req.body.scheduleId], (error, result, fields) => {
-            if (result && result.affectedRows === 1) {
-                res.send({
-                    message: 'Booking successfully added.',
+    //console.log('got request');
+    pool.getConnection(async (err, db) => {
+        /*await connection.execute('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
+        Need to check which level to set*/
+        //console.log('before transaction start');
+        await db.promise().beginTransaction();
+        //console.log('after transaction start');
+        try {
+            let query = 'SELECT number_of_free_spots FROM schedule WHERE schedule.schedule_id = ?';
+            let number_of_free_spots;
+            let total_price;
+            //console.log('before get number of free spots');
+            await db.promise().query(query, [req.body.scheduleId])
+                .then(([result, fields]) => {
+                    if (result && result[0].number_of_free_spots >= req.body.numberOfSpots) {
+                        number_of_free_spots = result[0].number_of_free_spots;
+                    } else {
+                        throw new Error('Not enough free spots.');
+                    }
+                })
+            //console.log(`number of free spots ${number_of_free_spots}, ${req.body.numberOfSpots}`);
+            query = 'UPDATE schedule SET number_of_free_spots = ? WHERE schedule_id = ?;'
+            await db.promise().query(query, [number_of_free_spots - req.body.numberOfSpots, req.body.scheduleId])
+                .then(([result, fields]) => {
+                    if (!result || result.affectedRows !== 1) {
+                        throw new Error('Something went wrong with updating free spots.');
+                    }
                 });
-            } else {
-                res.send({
-                    message: 'Something went wrong',
-                });
-            }
-        });
+            //console.log(`schedule updated`);
+            query = 'SELECT t.price FROM schedule JOIN tour AS t ON schedule.tour_id = t.tour_id WHERE schedule.schedule_id = ? LIMIT 1';
+            await db.promise().query(query, [req.body.scheduleId])
+                .then(([result, fields]) => {
+                    if (result && result[0]) {
+                        //console.log(result[0].price );
+                        total_price = result[0].price * req.body.numberOfSpots;
+                    } else {
+                        throw new Error('Cannot retrieve tour price.');
+                    }
+                })
+            //console.log(`total price ${total_price}`);
+            query = 'INSERT INTO booking VALUES (?, ?, ?, ?, ?)';
+            await db.promise().query(query, [req.body.numberOfSpots, total_price, req.body.dateTime, req.body.customerId, req.body.scheduleId])
+                .then(([result, fields]) => {
+                    if (!result || result.affectedRows !== 1) {
+                        throw new Error('Cannot create booking.');
+                    }
+                })
+            //console.log(`booking inserted`);
+            await db.promise().commit();
+            //console.log(`commited`);
+            res.send({
+                message: 'Booking successfully added.',
+            });
+        } catch(err) {
+            //console.log(`failed ${err}`);
+            await db.promise().rollback();
+            //console.log(`rolled back`);
+            res.send({
+                message: `Error occured while creating booking. Please try again later.\n${err}`,
+            });
+        }
         db.release();
     });
 });
