@@ -1,3 +1,31 @@
+-- works
+DROP TRIGGER IF EXISTS update_number_of_spots;
+DELIMITER $$
+CREATE TRIGGER update_number_of_spots
+	BEFORE INSERT ON booking
+	FOR EACH ROW BEGIN
+		DECLARE free_spots INT;
+        SET free_spots = (SELECT number_of_free_spots FROM schedule WHERE schedule.schedule_id = NEW.schedule_id);
+		IF (free_spots >= NEW.number_of_spots) THEN 
+			UPDATE schedule SET number_of_free_spots = free_spots - NEW.number_of_spots
+			WHERE schedule_id = NEW.schedule_id;
+		ELSE 
+			SIGNAL SQLSTATE '45000' 
+			SET MESSAGE_TEXT = "ERROR: Not enough free spots";
+		END IF;
+	END $$ 
+DELIMITER ;
+
+-- booking total_price based on amount of people
+DROP TRIGGER IF EXISTS update_total_price;
+DELIMITER $$
+CREATE TRIGGER update_total_price
+	BEFORE INSERT ON booking
+	FOR EACH ROW BEGIN
+		SET NEW.total_price = ((SELECT t.price FROM schedule JOIN tour AS t ON schedule.tour_id = t.tour_id WHERE schedule.schedule_id = NEW.schedule_id LIMIT 1) * NEW.number_of_spots);
+    END $$ 
+DELIMITER ;
+
 -- 500 inserts for guides
 INSERT INTO guide (first_name, last_name, license, phone, email, rating, contract_end_date) VALUES 
 ('Chava','Page','MSI94JFY3WP','06 51 26 41 61','blandit.mattis@outlook.ca',1, "2032-09-10"),
@@ -3562,3 +3590,6 @@ INSERT INTO tour_rating (schedule_id, customer_id, rating, comment) VALUES
 (284, 75, 3.8, "cursus purus. Nullam scelerisque neque sed sem egestas"),
 (76, 203, 1.3, "Donec non justo. Proin non massa non ante bibendum ullamcorper. Duis cursus, diam at pretium aliquet, metus urna convallis erat, eget tincidunt dui augue eu tellus. Phasellus elit pede, malesuada vel, venenatis vel, faucibus id, libero. Donec consectetuer mauris id sapien. Cras dolor dolor, tempus non, lacinia at,"),
 (180, 29, 3.8, "dolor, tempus non, lacinia at, iaculis quis, pede. Praesent eu dui. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean eget magna. Suspendisse tristique neque venenatis lacus. Etiam bibendum fermentum metus. Aenean sed pede");
+
+DROP TRIGGER IF EXISTS update_number_of_spots;
+DROP TRIGGER IF EXISTS update_total_price;
