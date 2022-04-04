@@ -45,4 +45,4 @@ CREATE USER 'first_admin' identified by 'passwordAdmin';
 
 GRANT 'tour_manager' TO 'first_manager';
 GRANT 'tour_developer' TO 'first_developer';
-GRANT 'admin' TO 'first_admin';
+GRANT 'tour_admin' TO 'first_admin';
