@@ -41,6 +41,7 @@ GRANT SELECT ON tourguide.guide_rating_view TO 'tour_manager';
 GRANT SELECT ON tourguide.tour_place_schedule TO 'tour_manager';
 GRANT SELECT ON tourguide.tour_rating_view TO 'tour_manager';
 GRANT EXECUTE ON PROCEDURE PaginateSort TO 'tour_manager';
+GRANT SELECT (customer_id, first_name, last_name, email, phone) ON tourguide.customer TO 'tour_manager';
 
 -- GRANT SHOW DATABASES TO 'tour_manager';
 -- FLUSH privileges;
