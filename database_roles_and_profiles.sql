@@ -1,6 +1,9 @@
 DROP ROLE IF EXISTS 'tour_manager';
 DROP ROLE IF EXISTS 'tour_developer';
 DROP ROLE IF EXISTS 'tour_admin';
+DROP USER IF EXISTS 'first_admin';
+DROP USER IF EXISTS 'first_developer';
+DROP USER IF EXISTS 'first_manager';
 
 CREATE ROLE 'tour_manager', 'tour_developer', 'tour_admin';
 
@@ -38,11 +41,21 @@ GRANT SELECT ON tourguide.tour_place_schedule TO 'tour_manager';
 GRANT SELECT ON tourguide.tour_rating_view TO 'tour_manager';
 GRANT EXECUTE ON PROCEDURE PaginateSort TO 'tour_manager';
 
--- creaye users --
+-- GRANT SHOW DATABASES TO 'tour_manager';
+-- FLUSH privileges;
+-- GRANT VIEW ON tourguide.* TO 'tour_manager';
+
+-- create users --
 CREATE USER 'first_manager' identified by 'passwordManager';
 CREATE USER 'first_developer' identified by 'passwordDeveloper';
 CREATE USER 'first_admin' identified by 'passwordAdmin';
 
 GRANT 'tour_manager' TO 'first_manager';
 GRANT 'tour_developer' TO 'first_developer';
-GRANT 'admin' TO 'first_admin';
+GRANT 'tour_admin' TO 'first_admin';
+
+-- set default roles
+SET DEFAULT ROLE 'tour_manager' TO 'first_manager';
+SET DEFAULT ROLE 'tour_developer' TO 'first_developer';
+SET DEFAULT ROLE 'tour_admin' TO 'first_admin';
+FLUSH privileges;
