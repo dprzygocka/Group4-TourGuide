@@ -27,6 +27,7 @@ GRANT SELECT, ALTER ON tourguide.tour_place_schedule TO 'tour_developer';
 GRANT SELECT, ALTER ON tourguide.tour_rating_view TO 'tour_developer';
 
 -- tour_manager role --
+GRANT SELECT ON tourguide.customer TO 'tour_manager';
 GRANT SELECT ON tourguide.guide TO 'tour_manager';
 GRANT SELECT ON tourguide.place TO 'tour_manager';
 GRANT SELECT ON tourguide.schedule TO 'tour_manager';
