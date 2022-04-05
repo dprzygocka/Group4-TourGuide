@@ -43,10 +43,6 @@ GRANT SELECT ON tourguide.tour_rating_view TO 'tour_manager';
 GRANT EXECUTE ON PROCEDURE PaginateSort TO 'tour_manager';
 GRANT SELECT (customer_id, first_name, last_name, email, phone) ON tourguide.customer TO 'tour_manager';
 
--- GRANT SHOW DATABASES TO 'tour_manager';
--- FLUSH privileges;
--- GRANT VIEW ON tourguide.* TO 'tour_manager';
-
 -- create users --
 CREATE USER 'first_manager' identified by 'passwordManager';
 CREATE USER 'first_developer' identified by 'passwordDeveloper';
