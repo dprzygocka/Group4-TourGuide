@@ -3,43 +3,34 @@ const { pool } = require('../database/connection');
 const { Tour } = require('../models/Tour');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
-/*router.get('/api/mysql/tours', (req, res) => {
+router.get('/api/mysql/tours', async(req, res) => {
     const sortColumn = req.query.sortColumn || 'tour_id';
     const direction = req.query.direction || 'ASC';
     const size = req.query.size || 10;
     //paging starts from 0
     const page = req.query.page - 1 || 0;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
-        pool.getConnection((err, db) => {
-            let query = `CALL PaginateSort(?, ?, ?, ?, ?)`;
-            db.query(query, ['tour', sortColumn, direction, size, page], (error, result, fields) => {
-                if (result && result.length && result[0].length) {
-                    const tours = [];
-                    for (const tour of result[0]) {
-                        //create new object
-                        tours.push(new Tour(tour.tour_id, tour.price, tour.duration, tour.number_of_spots, tour.difficulty, tour.age_limit, tour.place_of_departure_id, tour.distance, tour.description, tour.rating, tour.place_of_destination_id, tour.is_active));
+        try {
+            const tours = await pool.query(`CALL PaginateSort(:table, :column, :direction, :size, :page)`,
+                {
+                    replacements: {
+                        table: 'tour', 
+                        column: sortColumn,
+                        direction: direction,
+                        size: size,
+                        page: page,
                     }
-                    res.send(tours);
-                } else if (error) {
-                    res.send({
-                        message: error.sqlMessage,
-                    });
-                } else {
-                    res.send({
-                        message: 'No results',
-                    });
-                }
-            });
-            db.release();
-        });
+                })
+            res.send(tours);
+        } catch (error) {
+            res.send(error);
+        }
     } else {
         res.send({
             message: `Check your input:\nsort column: ${sortColumn}\ndirection: ${direction}\nsize: ${size}\npage: ${page}\n`
         })
     }
 });
-*/
-
 
 
 router.get('/api/mysql/tours/:tour_id', async (req, res) => {
