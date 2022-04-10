@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { pool } = require('../database/connection');
 const { Tour } = require('../models/Tour');
+const { Op } = require("sequelize");
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 router.get('/api/mysql/tours', async(req, res) => {
@@ -35,7 +36,7 @@ router.get('/api/mysql/tours', async(req, res) => {
 
 router.get('/api/mysql/tours/:tour_id', async (req, res) => {
     try {
-        const tour = await Tour.findAll({
+        const tour = await Tour.findOne({
             where: {
                 id: req.params.tour_id
             }
@@ -45,8 +46,22 @@ router.get('/api/mysql/tours/:tour_id', async (req, res) => {
         res.send(error);
     }
 });
-/*
-router.get('/api/mysql/tours/description/:search_keys', (req, res) => {
+
+//need to discuss
+/*router.get('/api/mysql/tours/description', async (req, res) => {
+    try {
+        const tours = await Tour.findALL({
+            where: {
+                description: {
+                    [Op.match]: pool.fn('to_tsquery', req.query.search_keys)
+                }
+            }
+        })
+        res.send(tours);
+    } catch (error) {
+        res.send(error);
+    }
+    /*
     pool.getConnection((err, db) => {
         let query = `select * from tour where match (description) against (?);`;
         db.query(query, [req.params.search_keys], (error, result, fields) => {
@@ -70,26 +85,28 @@ router.get('/api/mysql/tours/description/:search_keys', (req, res) => {
         db.release();
     });
 });
+*/
 
-router.post('/api/mysql/tours', (req, res) => {
-    pool.getConnection((err, db) => {
-        let query = 'INSERT INTO tour (difficulty, price, duration, number_of_spots, age_limit, distance, description, place_of_departure_id, place_of_destination_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        db.query(query, [req.body.difficulty, req.body.price, req.body.duration, req.body.numberOfSpots, req.body.ageLimit, req.body.distance, req.body.description, req.body.placeOfDeparture, req.body.placeOfDestination], (error, result, fields) => {
-            if (result && result.affectedRows === 1) {
-                res.send({
-                    message: 'Tour successfully added.',
-                });
-            } else {
-                res.send({
-                    message: 'Something went wrong',
-                });
-            }
-        });
-        db.release();
-    });
+router.post('/api/mysql/tours', async(req, res) => {
+    try {
+        const tour = await Tour.create({
+            difficulty: req.body.difficulty,
+            price: req.body.price,
+            duration: req.body.duration,
+            numberOfSpots: req.body.numberOfSpots,
+            ageLimit: req.body.ageLimit,
+            distance: req.body.distance,
+            description: req.body.description,
+            placeOfDeparture: req.body.placeOfDeparture,
+            placeOfDestination: req.body.placeOfDestination
+        })
+        res.send(tour);
+    } catch (error) {
+        res.send(error);
+    }
 });
 
-
+/*
 router.delete('/api/mysql/tours/:tour_id', (req, res) => {
     pool.getConnection((err, db) => {
         let query = 'DELETE FROM tourguide.tour WHERE tour_id = ?;';
