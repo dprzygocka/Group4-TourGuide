@@ -106,25 +106,19 @@ router.post('/api/mysql/tours', async(req, res) => {
     }
 });
 
-/*
-router.delete('/api/mysql/tours/:tour_id', (req, res) => {
-    pool.getConnection((err, db) => {
-        let query = 'DELETE FROM tourguide.tour WHERE tour_id = ?;';
-        db.query(query, [req.params.tour_id], (error, result, fields) => {
-            if (result && result.affectedRows === 1) {
-                res.send({
-                    message: 'Tour successfully deleted.',
-                });
-            } else {
-                res.send({
-                    message: 'Something went wrong',
-                });
+router.delete('/api/mysql/tours/:tour_id', async (req, res) => {
+    try {
+        await Tour.destroy({
+            where: {
+                id: req.params.tour_id
             }
-        });
-        db.release();
-    });
+        })
+        res.send('Tour deleted');
+    } catch (error) {
+        res.send(error);
+    }
 });
-
+/*
 router.put('/api/mysql/tours/:tour_id', (req, res) => {
     pool.getConnection((err, db) => {
         let query = 'UPDATE tour SET difficulty = ?, price = ?, duration = ?, number_of_spots = ?, age_limit = ?, distance = ?, description = ?, place_of_departure_id = ?, place_of_destination_id = ?, is_active = ? WHERE tour_id = ?;';
