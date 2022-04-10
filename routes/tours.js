@@ -3,7 +3,7 @@ const { pool } = require('../database/connection');
 const { Tour } = require('../models/Tour');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
-router.get('/api/mysql/tours', (req, res) => {
+/*router.get('/api/mysql/tours', (req, res) => {
     const sortColumn = req.query.sortColumn || 'tour_id';
     const direction = req.query.direction || 'ASC';
     const size = req.query.size || 10;
@@ -38,23 +38,23 @@ router.get('/api/mysql/tours', (req, res) => {
         })
     }
 });
+*/
 
-router.get('/api/mysql/tours/:tour_id', (req, res) => {
-    pool.getConnection((err, db) => {
-        let query = 'SELECT * FROM tour WHERE tour_id = ?';
-        db.query(query, [req.params.tour_id], (error, result, fields) => {
-            if (result && result.length) {
-                res.send(new Tour(result[0].tour_id, result[0].price, result[0].duration, result[0].number_of_spots, result[0].difficulty, result[0].age_limit, result[0].place_of_departure_id, result[0].distance, result[0].description, result[0].rating, result[0].place_of_destination_id, result[0].is_active));
-            } else {
-                res.send({
-                    message: 'No results',
-                });
+
+
+router.get('/api/mysql/tours/:tour_id', async (req, res) => {
+    try {
+        const tour = await Tour.findAll({
+            where: {
+                id: req.params.tour_id
             }
-        });
-        db.release();
-    });
+        })
+        res.send(tour);
+    } catch (error) {
+        res.send(error);
+    }
 });
-
+/*
 router.get('/api/mysql/tours/description/:search_keys', (req, res) => {
     pool.getConnection((err, db) => {
         let query = `select * from tour where match (description) against (?);`;
@@ -162,7 +162,7 @@ router.patch('/api/mysql/tours/:tour_id', (req, res) => {
         db.release();
     });
 });
-
+*/
 module.exports = {
     router,
   };
