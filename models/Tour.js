@@ -27,9 +27,10 @@ Tour.init({
 		type: DataTypes.ENUM("EASY", "MEDIUM", "HARD", "EXTREME"),
         allowNull: false,
 	},
-    age_limit: {
+    ageLimit: {
 		type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'age_limit'
 	},
     placeOfDeparture: {
 		type: DataTypes.INTEGER,
