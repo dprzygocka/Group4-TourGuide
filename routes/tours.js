@@ -141,9 +141,9 @@ router.put('/api/mysql/tours/:tour_id', async (req, res) => {
         res.send(error);
     }
 });
-/*
+
 //update one field
-router.patch('/api/mysql/tours/:tour_id', (req, res) => {
+router.patch('/api/mysql/tours/:tour_id', async (req, res) => {
     const fieldName = req.body.fieldName;
     const fieldValue = req.body.fieldValue;
     //we can restrict fields to update here
@@ -153,23 +153,21 @@ router.patch('/api/mysql/tours/:tour_id', (req, res) => {
         });
         return;
     }
-    pool.getConnection((err, db) => {
-        let query = `UPDATE tour SET ${fieldName} = ? WHERE tour_id = ?;`;
-        db.query(query, [fieldValue, req.params.tour_id], (error, result, fields) => {
-            if (result && result.affectedRows === 1) {
-                res.send({
-                    message: `Tour ${fieldName} successfully updated.`,
-                });
-            } else {
-                res.send({
-                    message: 'Something went wrong',
-                });
+    //dynamically assign value to update
+    const updateData = {};
+    updateData[fieldName] = fieldValue;
+    try {
+        const tour = await Tour.update(updateData, {
+            where: {
+                id: req.params.tour_id
             }
-        });
-        db.release();
-    });
+        })
+        res.send(`Tour updated`);
+    } catch (error) {
+        res.send(error);
+    }
 });
-*/
+
 module.exports = {
     router,
   };
