@@ -47,25 +47,22 @@ router.get('/api/mysql/customers/:customer_id', async (req, res) => {
         res.send(error);
     }
 });
-/*
-router.post('/api/mysql/customers/register', (req, res) => {
-    bcrypt.hash(req.body.password, saltRounds, (error, hash) => {
+
+router.post('/api/mysql/customers/register', async (req, res) => {
+    bcrypt.hash(req.body.password, saltRounds, async (error, hash) => {
         if (!error) {
-            pool.getConnection((err, db) => {
-                let query = 'INSERT INTO customer (first_name, last_name, phone, email, password) VALUES (?, ?, ?, ?, ?)';
-                db.query(query, [req.body.firstName, req.body.lastName, req.body.phone, req.body.email, hash], (error, result, fields) => {
-                    if (result && result.affectedRows === 1) {
-                        res.send({
-                            message: 'Customer successfully added.',
-                        });
-                    } else {
-                        res.send({
-                            message: 'Something went wrong',
-                        });
-                    }
-                });
-                db.release();
-            });
+            try {
+                const customer = await Customer.create({
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    phone: req.body.phone,
+                    email: req.body.email,
+                    password: hash,
+                })
+                res.send(customer);
+            } catch (error) {
+                res.send(error);
+            }
         } else {
             res.status(500).send({
                 message: "Something went wrong. Try again."
@@ -73,7 +70,7 @@ router.post('/api/mysql/customers/register', (req, res) => {
         }
     });
 });
-
+/*
 router.post('/api/mysql/customers/login', (req, res) => {
     pool.getConnection((err, db) => {
         let query = 'SELECT * FROM customer WHERE email = ?';
