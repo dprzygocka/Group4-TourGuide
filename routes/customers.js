@@ -70,33 +70,30 @@ router.post('/api/mysql/customers/register', async (req, res) => {
         }
     });
 });
-/*
-router.post('/api/mysql/customers/login', (req, res) => {
-    pool.getConnection((err, db) => {
-        let query = 'SELECT * FROM customer WHERE email = ?';
-        db.query(query, [req.body.email], (error, result, fields) => {
-            if (result && result.length) {
-                bcrypt.compare(req.body.password, result[0].password, (error, match) => {
-                    if (match) {
-                        res.send({
-                            message: 'Customer logged in.',
-                        });
-                    } else {
-                        res.status(401).send({
-                            message: "Incorrect username or password. Try again."
-                        });
-                    }
+
+router.post('/api/mysql/customers/login', async (req, res) => {
+    try {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.body.email
+            }
+        })
+        bcrypt.compare(req.body.password,customer.password, (error, match) => {
+            if (match) {
+                res.send({
+                    message: 'Customer logged in.',
                 });
             } else {
-                res.send({
-                    message: 'Something went wrong',
+                res.status(401).send({
+                    message: "Incorrect username or password. Try again."
                 });
             }
         });
-        db.release();
-    });
+    } catch (error) {
+        res.send(error);
+    }
 });
-*/
+
 module.exports = {
   router,
 };
