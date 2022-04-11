@@ -1,46 +1,40 @@
 const router = require('express').Router();
-const { pool } = require('../database/connection');
+//const { pool } = require('../database/connection');
 const bcrypt = require("bcrypt");
 const { Customer } = require('../models/customer');
+const { sequelize } = require('../database/connection');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 const saltRounds = 15;
 
-router.get('/api/mysql/customers', (req, res) => {
+router.get('/api/mysql/customers', async (req, res) => {
     const sortColumn = req.query.sortColumn || 'customer_id';
     const direction = req.query.direction || 'ASC';
     const size = req.query.size || 10;
     //paging starts from 0
     const page = req.query.page - 1 || 0;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
-        pool.getConnection((err, db) => {
-            let query = `CALL PaginateSort(?, ?, ?, ?, ?)`;
-            db.query(query, ['customer', sortColumn, direction, size, page], (error, result, fields) => {
-                if (result && result.length && result[0].length) {
-                    const customers = [];
-                    for (const customer of result[0]) {
-                        //create new object
-                        customers.push(new Customer(customer.customer_id, customer.first_name, customer.last_name, customer.email, customer.phone, customer.password));
+        try {
+            const tours = await sequelize.query(`CALL PaginateSort(:table, :column, :direction, :size, :page)`,
+                {
+                    replacements: {
+                        table: 'customer', 
+                        column: sortColumn,
+                        direction: direction,
+                        size: size,
+                        page: page,
                     }
-                    res.send(customers);
-                } else if (error) {
-                    res.send({
-                        message: error.sqlMessage,
-                    });
-                } else {
-                    res.send({
-                        message: 'No results',
-                    });
-                }
-            });
-            db.release();
-        });
+                })
+            res.send(tours);
+        } catch (error) {
+            res.send(error);
+        }
     } else {
         res.send({
             message: `Check your input:\nsort column: ${sortColumn}\ndirection: ${direction}\nsize: ${size}\npage: ${page}\n`
         })
     }
 });
-
+/*
 router.get('/api/mysql/customers/:customer_id', (req, res) => {
     pool.getConnection((err, db) => {
         let query = 'SELECT * FROM customer WHERE customer_id = ?';
@@ -108,7 +102,7 @@ router.post('/api/mysql/customers/login', (req, res) => {
         db.release();
     });
 });
-
+*/
 module.exports = {
   router,
 };
