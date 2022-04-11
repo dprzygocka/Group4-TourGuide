@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const { pool } = require('../database/connection');
+const { sequelize } = require('../database/connection');
 
 class Tour extends Sequelize.Model {}
 Tour.init({
@@ -69,7 +69,7 @@ Tour.init({
         field: 'is_active'
 	},
 }, {
-    sequelize: pool,
+    sequelize: sequelize,
     tableName: 'tour',
     modelName: 'Tour',
     defaultScope: {

@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const { pool } = require('../database/connection');
+const { sequelize } = require('../database/connection');
 
 class Place extends Sequelize.Model {}
 Place.init({

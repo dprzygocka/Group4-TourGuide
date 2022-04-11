@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { pool } = require('../database/connection');
+const { sequelize } = require('../database/connection');
 const { Tour } = require('../models/Tour');
 const { Op } = require("sequelize");
 const {checkDirection, checkSortColumn} = require('../models/Utils');
@@ -12,7 +12,7 @@ router.get('/api/mysql/tours', async(req, res) => {
     const page = req.query.page - 1 || 0;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         try {
-            const tours = await pool.query(`CALL PaginateSort(:table, :column, :direction, :size, :page)`,
+            const tours = await sequelize.query(`CALL PaginateSort(:table, :column, :direction, :size, :page)`,
                 {
                     replacements: {
                         table: 'tour', 
@@ -48,12 +48,13 @@ router.get('/api/mysql/tours/:tour_id', async (req, res) => {
 });
 
 //need to discuss
-/*router.get('/api/mysql/tours/description', async (req, res) => {
+router.get('/api/mysql/tours/description/:search_keys', async (req, res) => {
+    console.log(req.params.search_keys);
     try {
         const tours = await Tour.findALL({
             where: {
                 description: {
-                    [Op.match]: pool.fn('to_tsquery', req.query.search_keys)
+                    [Op.like]: `%${req.params.search_keys}%`
                 }
             }
         })
@@ -83,9 +84,9 @@ router.get('/api/mysql/tours/:tour_id', async (req, res) => {
             }
         });
         db.release();
-    });
+    });*/
 });
-*/
+
 
 router.post('/api/mysql/tours', async(req, res) => {
     try {
