@@ -14,7 +14,7 @@ router.get('/api/mysql/customers', async (req, res) => {
     const page = req.query.page - 1 || 0;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         try {
-            const tours = await sequelize.query(`CALL PaginateSort(:table, :column, :direction, :size, :page)`,
+            const customers = await sequelize.query(`CALL PaginateSort(:table, :column, :direction, :size, :page)`,
                 {
                     replacements: {
                         table: 'customer', 
@@ -24,7 +24,7 @@ router.get('/api/mysql/customers', async (req, res) => {
                         page: page,
                     }
                 })
-            res.send(tours);
+            res.send(customers);
         } catch (error) {
             res.send(error);
         }
@@ -34,23 +34,20 @@ router.get('/api/mysql/customers', async (req, res) => {
         })
     }
 });
-/*
-router.get('/api/mysql/customers/:customer_id', (req, res) => {
-    pool.getConnection((err, db) => {
-        let query = 'SELECT * FROM customer WHERE customer_id = ?';
-        db.query(query, [req.params.customer_id], (error, result, fields) => {
-            if (result && result.length) {
-                res.send(new Customer(result[0].customer_id, result[0].first_name, result[0].last_name, result[0].email, result[0].phone, result[0].password));
-            } else {
-                res.send({
-                    message: 'No results',
-                });
-            }
-        });
-        db.release();
-    });
-});
 
+router.get('/api/mysql/customers/:customer_id', async (req, res) => {
+    try {
+        const customer = await Customer.findOne({
+            where: {
+                id: req.params.customer_id
+            }
+        })
+        res.send(customer);
+    } catch (error) {
+        res.send(error);
+    }
+});
+/*
 router.post('/api/mysql/customers/register', (req, res) => {
     bcrypt.hash(req.body.password, saltRounds, (error, hash) => {
         if (!error) {
