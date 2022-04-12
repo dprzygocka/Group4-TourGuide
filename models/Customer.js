@@ -45,10 +45,6 @@ Customer.init({
     sequelize: sequelize,
     tableName: 'customer',
     modelName: 'Customer',
-    defaultScope: {
-        attributes: { exclude: ['createdAt', 'updatedAt'] }
-    },
-       timestamps: false 
 })
 
 module.exports = {

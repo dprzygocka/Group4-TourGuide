@@ -10,7 +10,10 @@ const sequelize = new Sequelize(
       max: 5
     },
     host: process.env.HOST,
-    dialect: 'mysql'
+    dialect: 'mysql',
+    define: {
+      timestamps: false
+    }
   }
 )
 
