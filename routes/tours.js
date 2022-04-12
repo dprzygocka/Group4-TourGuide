@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { sequelize } = require('../database/connection');
 const { Tour } = require('../models/Tour');
+const { Place } = require('../models/Place');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 router.get('/api/mysql/tours', async(req, res) => {
@@ -38,7 +39,14 @@ router.get('/api/mysql/tours/:tour_id', async (req, res) => {
         const tour = await Tour.findOne({
             where: {
                 id: req.params.tour_id
-            }
+            },
+            include: [{
+                model: Place,
+                as: 'Destination',
+            }, {
+                model: Place,
+                as: 'Departure'
+            }],
         })
         res.send(tour);
     } catch (error) {

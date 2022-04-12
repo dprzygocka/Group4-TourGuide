@@ -22,5 +22,4 @@ Place.init({
     modelName: 'Place',
 })
 
-
 module.exports = { Place };
