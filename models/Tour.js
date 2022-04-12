@@ -71,11 +71,7 @@ Tour.init({
 }, {
     sequelize: sequelize,
     tableName: 'tour',
-    modelName: 'Tour',
-    defaultScope: {
-        attributes: { exclude: ['createdAt', 'updatedAt'] }
-    },
-       timestamps: false 
+    modelName: 'Tour' 
 })
 
 
