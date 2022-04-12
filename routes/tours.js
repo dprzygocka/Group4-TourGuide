@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const { sequelize } = require('../database/connection');
 const { Tour } = require('../models/Tour');
-const { Op } = require("sequelize");
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 router.get('/api/mysql/tours', async(req, res) => {
@@ -47,44 +46,18 @@ router.get('/api/mysql/tours/:tour_id', async (req, res) => {
     }
 });
 
-//need to discuss
 router.get('/api/mysql/tours/description/:search_keys', async (req, res) => {
-    console.log(req.params.search_keys);
     try {
-        const tours = await Tour.findALL({
-            where: {
-                description: {
-                    [Op.like]: `%${req.params.search_keys}%`
-                }
+        const tours = await Tour.findAll({
+            where: sequelize.literal('MATCH (description) AGAINST (:search_key)'), 
+            replacements: {
+                search_key: req.params.search_keys
             }
         })
         res.send(tours);
     } catch (error) {
         res.send(error);
     }
-    /*
-    pool.getConnection((err, db) => {
-        let query = `select * from tour where match (description) against (?);`;
-        db.query(query, [req.params.search_keys], (error, result, fields) => {
-            if (result && result.length) {
-                const tours = [];
-                for (const tour of result) {
-                    //create new object
-                    tours.push(new Tour(tour.tour_id, tour.price, tour.duration, tour.number_of_spots, tour.difficulty, tour.age_limit, tour.place_of_departure_id, tour.distance, tour.description, tour.rating, tour.place_of_destination_id, tour.is_active));
-                }
-                res.send(tours);
-            } else if (error) {
-                res.send({
-                    message: error.sqlMessage,
-                });
-            } else {
-                res.send({
-                    message: 'No results',
-                });
-            }
-        });
-        db.release();
-    });*/
 });
 
 
