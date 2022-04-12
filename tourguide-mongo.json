@@ -1,12 +1,12 @@
 {
     "tourguide": {
-        "place": [
+        "places": [
             {
                 "_id": 1,
                 "place_name": "example"
             }
         ],
-        "tour": [
+        "tours": [
             {
                 "_id": 1,
                 "difficulty": "EASY",
@@ -22,7 +22,7 @@
                 "is_active": 1
             }
         ],
-        "schedule": [
+        "schedules": [
             {
                 "_id": 1,
                 "number_of_free_spots": 10,
@@ -54,7 +54,7 @@
                 }
             }
         ],
-        "guide": [
+        "guides": [
             {
                 "_id": 1,
                 "first_name": "Bill",
@@ -67,10 +67,10 @@
                 "guide_ratings": []
             }
         ],
-        "customer": [
+        "customers": [
             {
                 "_id": 1,
-	            "booking": [
+	            "bookings": [
 		            {
                         "_id": 1,
                         "number_of_spots": 2,
