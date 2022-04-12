@@ -80,7 +80,7 @@ DELIMITER $$
 CREATE TRIGGER audit_booking_insert
 	AFTER INSERT ON booking
 	FOR EACH ROW BEGIN
-		INSERT INTO booking_audit (customer_id, schedule_id, column_name, new_value, action_type, done_at) VALUES (NEW.customer_id, NEW.schedule_id, 'total_price', NEW.total_price ,'insert', NOW());
+		INSERT INTO booking_audit (customer_id, schedule_id, column_name, new_value, action_type, done_at, made_by) VALUES (NEW.customer_id, NEW.schedule_id, 'total_price', NEW.total_price ,'insert', NOW(), (SELECT user()));
     END $$ 
 DELIMITER ;
 
@@ -90,7 +90,7 @@ DELIMITER $$
 CREATE TRIGGER audit_booking_delete
 	AFTER DELETE ON booking
 	FOR EACH ROW BEGIN
-		INSERT INTO booking_audit (customer_id, schedule_id, column_name, new_value, action_type, done_at) VALUES (OLD.customer_id, OLD.schedule_id, 'total_price', OLD.total_price ,'delete', NOW());
+		INSERT INTO booking_audit (customer_id, schedule_id, column_name, new_value, action_type, done_at, made_by) VALUES (OLD.customer_id, OLD.schedule_id, 'total_price', OLD.total_price ,'delete', NOW(), (SELECT user()));
     END $$ 
 DELIMITE
 R ;
@@ -178,9 +178,9 @@ DELIMITER $$
 CREATE TRIGGER audit_trail_tour_insert
 	AFTER INSERT ON tour
 	FOR EACH ROW BEGIN
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'price', NEW.price, 'insert', NOW());
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'number_of_spots', NEW.number_of_spots, 'insert', NOW());
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'is_active', NEW.is_active, 'insert', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(NEW.tour_id, 'price', NEW.price, 'insert', NOW(), (SELECT user()));
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(NEW.tour_id, 'number_of_spots', NEW.number_of_spots, 'insert', NOW(), (SELECT user()));
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(NEW.tour_id, 'is_active', NEW.is_active, 'insert', NOW(), (SELECT user()));
 	END $$ 
 DELIMITER ;
 
@@ -192,13 +192,13 @@ AFTER UPDATE
 ON tour FOR EACH ROW
 BEGIN
     IF OLD.price <> NEW.price THEN
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'price', NEW.price, 'update', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(NEW.tour_id, 'price', NEW.price, 'update', NOW(), (SELECT user()));
     END IF;
 	IF OLD.number_of_spots <> NEW.number_of_spots THEN
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'number_of_spots', NEW.number_of_spots, 'update', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(NEW.tour_id, 'number_of_spots', NEW.number_of_spots, 'update', NOW(), (SELECT user()));
     END IF;
 	IF OLD.is_active <> NEW.is_active THEN
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(NEW.tour_id, 'is_active', NEW.is_active, 'update', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(NEW.tour_id, 'is_active', NEW.is_active, 'update', NOW(), (SELECT user()));
     END IF;
 END$$
 DELIMITER ;
@@ -217,9 +217,9 @@ DELIMITER $$
 CREATE TRIGGER audit_trail_tour_delete
 	AFTER DELETE ON tour
 	FOR EACH ROW BEGIN
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(OLD.tour_id, 'price', OLD.price, 'delete', NOW());
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(OLD.tour_id, 'number_of_spots', OLD.number_of_spots, 'delete', NOW());
-        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at) values(OLD.tour_id, 'is_active', OLD.is_active, 'delete', NOW());
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(OLD.tour_id, 'price', OLD.price, 'delete', NOW(), (SELECT user()));
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(OLD.tour_id, 'number_of_spots', OLD.number_of_spots, 'delete', NOW(), (SELECT user()));
+        INSERT INTO tour_audit(tour_id, column_name, new_value, action_type, done_at, made_by) values(OLD.tour_id, 'is_active', OLD.is_active, 'delete', NOW(), (SELECT user()));
 	END $$ 
 DELIMITER ;
 
