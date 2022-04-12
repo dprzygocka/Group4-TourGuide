@@ -1,0 +1,90 @@
+{
+    "tourguide": {
+        "place": [
+            {
+                "_id": 1,
+                "place_name": "example"
+            }
+        ],
+        "tour": [
+            {
+                "_id": 1,
+                "difficulty": "EASY",
+                "price": 1000,
+                "duration": 2,
+                "number_of_spots": 10,
+                "age_limit": 14,
+                "distance": 15,
+                "rating": 4.2,
+                "description": "example descripton",
+                "place_of_departure": "base",
+                "place_of_destination": "somewhere",
+                "is_active": 1
+            }
+        ],
+        "schedule": [
+            {
+                "_id": 1,
+                "number_of_free_spots": 10,
+                "schedule_datetime": "2022-09-10 02:22:43",
+                "guide": {
+                    "_id": 1,
+                    "first_name": "Bill",
+                    "last_name": "Smith",
+                    "licence": "AYCHSA",
+                    "email": "bill@smth.com",
+                    "phone": "+45 91909889",
+                    "rating": 4.1,
+                    "contract_end_date": "2032-09-10"
+                },
+                "tour_ratings": [],
+                "tour": {
+                    "_id": 1,
+                    "difficulty": "EASY",
+                    "price": 1000,
+                    "duration": 2,
+                    "number_of_spots": 10,
+                    "age_limit": 14,
+                    "distance": 15,
+                    "rating": 4.2,
+                    "description": "example descripton",
+                    "place_of_departure": "base",
+                    "place_of_destination": "somewhere",
+                    "is_active": 1
+                }
+            }
+        ],
+        "guide": [
+            {
+                "_id": 1,
+                "first_name": "Bill",
+                "last_name": "Smith",
+                "licence": "AYCHSA",
+                "email": "bill@smth.com",
+                "phone": "+45 91909889",
+                "rating": 4.1,
+                "contract_end_date": "2032-09-10",
+                "guide_ratings": []
+            }
+        ],
+        "customer": [
+            {
+                "_id": 1,
+	            "booking": [
+		            {
+                        "_id": 1,
+                        "number_of_spots": 2,
+                        "total_price": 2000,
+                        "booking_date_time": "2022-08-10 02:22:43",
+                        "schedule_id": 1
+                    }	
+                ], 
+                "email": "name@smth.com",
+                "password": "hashed password",
+                "phone": "+45 99999999",
+                "first_name": "Sam",
+                "last_name": "Smith"
+            }
+        ]
+    }
+}
