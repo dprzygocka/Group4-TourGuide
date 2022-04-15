@@ -19,7 +19,8 @@ const customerSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        maxLength: 127
+        maxLength: 127,
+        unique: true
     },
     phone: {
         type: String,

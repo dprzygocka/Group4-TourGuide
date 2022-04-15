@@ -5,6 +5,15 @@ const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 const saltRounds = 15;
 
+router.get('/api/mongodb/customers', async (req, res) => {
+    try {
+        const customers = await Customer.find();
+        res.send(customers);
+    } catch (error) {
+          res.send(error);
+    }
+});
+
 router.get('/api/mongodb/customers/:customer_id', async (req, res) => {
     try {
         const customer = await Customer.findById(req.params.customer_id);
