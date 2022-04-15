@@ -46,6 +46,26 @@ router.post('/api/mongodb/customers/register', async (req, res) => {
     });
 });
 
+router.post('/api/mongodb/customers/login', async (req, res) => {
+    try {
+        const customer = await Customer.findOne({
+                email: req.body.email
+        }).exec();
+        bcrypt.compare(req.body.password, customer.password, (error, match) => {
+            if (match) {
+                res.send({
+                    message: 'Customer logged in.',
+                });
+            } else {
+                res.status(401).send({
+                    message: "Incorrect username or password. Try again."
+                });
+            }
+        });
+    } catch (error) {
+        res.send(error);
+    }
+});
 
 module.exports = {
   router,
