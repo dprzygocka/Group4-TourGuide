@@ -5,6 +5,15 @@ const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 const saltRounds = 15;
 
+router.get('/api/mongodb/customers/:customer_id', async (req, res) => {
+    try {
+        const customer = await Customer.findById(req.params.customer_id);
+        res.send(customer);
+    } catch (error) {
+        res.send(error);
+    }
+});
+
 router.post('/api/mongodb/customers/register', async (req, res) => {
     bcrypt.hash(req.body.password, saltRounds, async (error, hash) => {
         if (!error) {
