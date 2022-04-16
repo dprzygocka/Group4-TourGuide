@@ -5,11 +5,24 @@ const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 
 router.get('/api/mongodb/tours', async(req, res) => {
-    try {
-        const tours = await Tour.find();
-        res.send(tours);
-    } catch (error) {
-          res.send(error);
+    const sortColumn = req.query.sortColumn || '_id';
+    const direction = req.query.direction || 'ASC';
+    const size = req.query.size || 10;
+    //paging starts from 0
+    const page = req.query.page - 1 || 0;
+    const sortData = {};
+    sortData[sortColumn] = direction;
+    if (checkSortColumn(sortColumn) && checkDirection(direction)) {
+        try {
+            const tours = await Tour.find().skip(page).limit(size).sort(sortData);
+            res.send(tours);
+        } catch (error) {
+            res.send(error);
+        }
+    } else {
+        res.send({
+            message: `Check your input:\nsort column: ${sortColumn}\ndirection: ${direction}\nsize: ${size}\npage: ${page}\n`
+        })
     }
 });
 
@@ -23,6 +36,7 @@ router.get('/api/mongodb/tours/:tour_id', async (req, res) => {
     }
 });
 
+//missing full text search
 router.post('/api/mongodb/tours', async(req, res) => {
     try {
         const tour = await Tour.create({
