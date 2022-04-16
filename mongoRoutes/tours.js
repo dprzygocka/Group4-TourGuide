@@ -52,6 +52,26 @@ router.delete('/api/mongodb/tours/:tour_id', async (req, res) => {
     }
 });
 
+router.put('/api/mongodb/tours/:tour_id', async (req, res) => {
+    try {
+        await Tour.findByIdAndUpdate(req.params.tour_id, {
+            difficulty: req.body.difficulty,
+            price: req.body.price,
+            duration: req.body.duration,
+            number_of_spots: req.body.numberOfSpots,
+            age_limit: req.body.ageLimit,
+            distance: req.body.distance,
+            description: req.body.description,
+            place_of_departure_name: req.body.placeOfDeparture,
+            place_of_destination_name: req.body.placeOfDestination,
+            is_active: req.body.isActive
+        })
+        res.send("Tour updated");
+    } catch (error) {
+        res.send(error);
+    }
+});
+
 module.exports = {
   router,
 };
