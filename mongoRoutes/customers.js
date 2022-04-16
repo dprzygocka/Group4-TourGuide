@@ -1,16 +1,30 @@
 const router = require('express').Router();
 const Customer = require('../mongoModels/Customer.js');
 const bcrypt = require("bcrypt");
+const mongodb = require('../Database/connection_mongo');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 const saltRounds = 15;
 
 router.get('/api/mongodb/customers', async (req, res) => {
-    try {
-        const customers = await Customer.find();
-        res.send(customers);
-    } catch (error) {
-          res.send(error);
+    const sortColumn = req.query.sortColumn || '_id';
+    const direction = req.query.direction || 'ASC';
+    const size = req.query.size || 10;
+    //paging starts from 0
+    const page = req.query.page - 1 || 0;
+    const sortData = {};
+    sortData[sortColumn] = direction;
+        if (checkSortColumn(sortColumn) && checkDirection(direction)) {
+        try {
+            const customers = await Customer.find().skip(page).limit(size).sort(sortData);
+            res.send(customers);
+        } catch (error) {
+            res.send(error);
+        }
+    } else {
+        res.send({
+            message: `Check your input:\nsort column: ${sortColumn}\ndirection: ${direction}\nsize: ${size}\npage: ${page}\n`
+        })
     }
 });
 
