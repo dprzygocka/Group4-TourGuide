@@ -13,6 +13,16 @@ router.get('/api/mongodb/tours', async(req, res) => {
     }
 });
 
+
+router.get('/api/mongodb/tours/:tour_id', async (req, res) => {
+    try {
+        const tour = await Tour.findById(req.params.tour_id);
+        res.send(tour);
+    } catch (error) {
+        res.send(error);
+    }
+});
+
 router.post('/api/mongodb/tours', async(req, res) => {
     try {
         const tour = await Tour.create({
