@@ -72,6 +72,29 @@ router.put('/api/mongodb/tours/:tour_id', async (req, res) => {
     }
 });
 
+//update one field
+router.patch('/api/mongodb/tours/:tour_id', async (req, res) => {
+    const fieldName = req.body.fieldName;
+    const fieldValue = req.body.fieldValue;
+    //we can restrict fields to update here
+    if (!fieldName || fieldName === '_id' || !fieldValue ) {
+        res.send({
+            message: 'Nothing to update',
+        });
+        return;
+    }
+    //dynamically assign value to update
+    const updateData = {};
+    updateData[fieldName] = fieldValue;
+    try {
+        const tour = await Tour.findByIdAndUpdate(req.params.tour_id, updateData)
+        res.send(`Tour updated`);
+    } catch (error) {
+        res.send(error);
+    }
+});
+
+
 module.exports = {
   router,
 };
