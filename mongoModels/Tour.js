@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const tourSchema = new mongoose.Schema({
     difficulty: {
-        type: mongoose.String,
+        type: String,
         enum: ['EASY', 'MEDIUM', 'HARD', 'EXTREME'],
         required: true,
     },
@@ -36,25 +36,25 @@ const tourSchema = new mongoose.Schema({
         type: mongoose.Decimal128,
         //set to 2 decimal values
         set: v => mongoose.Types.Decimal128.fromString(v.toFixed(2)),
-        required: true,
+        required: false,
     },
     description: {//nvarchar 510
-        type: mongoose.String,
+        type: String,
         required: true,
         maxLength: 510
     },
     place_of_departure_name: {//varchar
-        type: mongoose.String,
+        type: String,
         required: true,
         maxLength: 120
     },
     place_of_destination_name: {//int
-        type: mongoose.String,
+        type: String,
         required: true,
         maxLength: 120
     },
     is_active: {//boolean
-        type: mongoose.Boolean,
+        type: Boolean,
         required: true,
         maxLength: 20
     },

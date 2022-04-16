@@ -2,28 +2,28 @@ const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema({
     firstName: {
-        type: mongoose.String,
+        type:  String,
         required: true,
         maxLength: 60
     },
     lastName: {
-        type: mongoose.String,
+        type:  String,
         required: true,
         maxLength: 60
     },
     password: {
-        type: mongoose.String,
+        type:  String,
         required: true,
         maxLength: 100
     },
     email: {
-        type: mongoose.String,
+        type:  String,
         required: true,
         maxLength: 127,
         unique: true
     },
     phone: {
-        type: mongoose.String,
+        type:  String,
         required: true,
         maxLength: 20
     },
