@@ -80,7 +80,8 @@ router.post('/api/mysql/tours', async(req, res) => {
             distance: req.body.distance,
             description: req.body.description,
             placeOfDeparture: req.body.placeOfDeparture,
-            placeOfDestination: req.body.placeOfDestination
+            placeOfDestination: req.body.placeOfDestination,
+            isActive: req.body.isActive
         })
         res.send(tour);
     } catch (error) {
