@@ -3,6 +3,16 @@ const Tour = require('../mongoModels/Tour.js');
 const mongodb = require('../Database/connection_mongo');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
+
+router.get('/api/mongodb/tours', async(req, res) => {
+    try {
+        const tours = await Tour.find();
+        res.send(tours);
+    } catch (error) {
+          res.send(error);
+    }
+});
+
 router.post('/api/mongodb/tours', async(req, res) => {
     try {
         const tour = await Tour.create({
@@ -22,8 +32,6 @@ router.post('/api/mongodb/tours', async(req, res) => {
         res.send(error);
     }
 });
-
-
 
 module.exports = {
   router,
