@@ -43,6 +43,15 @@ router.post('/api/mongodb/tours', async(req, res) => {
     }
 });
 
+router.delete('/api/mongodb/tours/:tour_id', async (req, res) => {
+    try {
+        await Tour.findByIdAndDelete(req.params.tour_id)
+        res.send('Tour deleted');
+    } catch (error) {
+        res.send(error);
+    }
+});
+
 module.exports = {
   router,
 };
