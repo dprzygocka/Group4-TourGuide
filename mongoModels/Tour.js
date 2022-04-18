@@ -58,6 +58,27 @@ const tourSchema = new mongoose.Schema({
         required: true,
         maxLength: 20
     },
+    tour_ratings : [{
+        rating: {
+            type: mongoose.Decimal128,
+            //set to 1 decimal value
+            set: v => mongoose.Types.Decimal128.fromString(v.toFixed(1)),
+            required: true,
+        },
+        comment: {
+            type: String,
+            required: true,
+            maxLength: 510
+        },
+        customer_id: {
+            type: String,
+            required: true,
+        },
+        schedule_id: {
+            type: String,
+            required: true,
+        }
+    }]
 });
 
 module.exports = mongoose.model("Tour", tourSchema);
