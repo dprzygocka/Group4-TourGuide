@@ -14,7 +14,7 @@ router.get('/api/mongodb/tours', async(req, res) => {
     sortData[sortColumn] = direction;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         try {
-            const tours = await Tour.find().skip(page).limit(size).sort(sortData);
+            const tours = await Tour.find().skip(page).limit(size).sort(sortData).exec();
             res.send(tours);
         } catch (error) {
             res.send(error);
@@ -108,6 +108,18 @@ router.patch('/api/mongodb/tours/:tour_id', async (req, res) => {
     }
 });
 
+//add rating to the tour
+router.patch('/api/mongodb/tours/:tour_id/rating', async (req, res) => {
+    try {
+        const tour = await Tour.findByIdAndUpdate(
+            req.params.tour_id,
+            {$push: {tour_ratings: req.body.tourRating}}
+        );
+        res.send(tour);
+    } catch (error) {
+        res.send(error);
+    }
+});
 
 module.exports = {
   router,
