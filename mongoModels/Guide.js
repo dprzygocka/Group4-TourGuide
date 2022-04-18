@@ -33,7 +33,28 @@ const guideSchema = new mongoose.Schema({
     contractEndDate: {
 		type: Date,
         required: true
-	}
+	},
+    guide_ratings: [
+        {
+            schedule_id: {
+                type: Number,
+                required: true
+            },
+            customer_id: {
+                type: Number,
+                default: null
+            },
+            rating: {
+                type: Number,
+                required: true
+            },
+            comment: {
+                type: Number,
+                required: false,
+                default: null
+            }
+        }
+    ],
 });
 
 module.exports = mongoose.model("Guide", guideSchema);

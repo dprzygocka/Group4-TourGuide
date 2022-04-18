@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Guide = require('../mongoModels/Guide.js');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
-router.get('/api/mongodb/guides', (req, res) => {
+router.get('/api/mongodb/guides', async (req, res) => {
     const sortColumn = req.query.sortColumn || 'guide_id';
     const direction = req.query.direction || 'ASC';
     const size = req.query.size || 10;
