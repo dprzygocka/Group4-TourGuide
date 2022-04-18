@@ -9,7 +9,12 @@ router.get('/api/mongodb/places', async (req, res) => {
   //paging starts from 0
   const page = req.query.page - 1 || 0;
   if (checkSortColumn(sortColumn) && checkDirection(direction)) {
-      //pagination 
+      try {
+        const places = await Place.find().skip(page).limit(size).sort(sortData);
+        res.send(places);
+      } catch (error) {
+          res.send(error);
+      } 
   } else {
       res.send({
           message: `Check your input:\nsort column: ${sortColumn}\ndirection: ${direction}\nsize: ${size}\npage: ${page}\n`
