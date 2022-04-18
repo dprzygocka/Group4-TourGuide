@@ -71,11 +71,11 @@ const tourSchema = new mongoose.Schema({
             maxLength: 510
         },
         customer_id: {
-            type: String,
+            type: ObjectId,
             required: true,
         },
         schedule_id: {
-            type: String,
+            type: ObjectId,
             required: true,
         }
     }]
