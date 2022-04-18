@@ -29,7 +29,7 @@ const customerSchema = new mongoose.Schema({
     },
     bookings : [{
         _id: {
-            type: ObjectId,
+            type: mongoose.ObjectId,
             required: true,
         },
         number_of_spots: {
@@ -46,7 +46,7 @@ const customerSchema = new mongoose.Schema({
             required: true,
         },
         schedule_id: {
-            type: ObjectId,
+            type: mongoose.ObjectId,
             required: true,
         }
     }]

@@ -71,14 +71,17 @@ const tourSchema = new mongoose.Schema({
             maxLength: 510
         },
         customer_id: {
-            type: ObjectId,
+            type: mongoose.ObjectId,
             required: true,
         },
         schedule_id: {
-            type: ObjectId,
+            type: mongoose.ObjectId,
             required: true,
         }
     }]
 });
+
+//create text index
+tourSchema.index({description: "text"});
 
 module.exports = mongoose.model("Tour", tourSchema);
