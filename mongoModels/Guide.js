@@ -27,7 +27,9 @@ const guideSchema = new mongoose.Schema({
         maxLength: 20
     },
     rating: {
-        type: Number,
+        type: mongoose.Decimal128,
+        //set to 1 decimal value
+        set: v => mongoose.Types.Decimal128.fromString(v.toFixed(1)),
         required: false
     },
     contractEndDate: {
@@ -37,21 +39,23 @@ const guideSchema = new mongoose.Schema({
     guide_ratings: [
         {
             schedule_id: {
-                type: Number,
+                type: mongoose.ObjectId,
                 required: true
             },
             customer_id: {
-                type: Number,
-                default: null
+                type: mongoose.ObjectId,
+                required: true
             },
             rating: {
-                type: Number,
+                type: mongoose.Decimal128,
+                //set to 1 decimal value
+                 set: v => mongoose.Types.Decimal128.fromString(v.toFixed(1)),
                 required: true
             },
             comment: {
-                type: Number,
-                required: false,
-                default: null
+                type: String,
+                required: true,
+                maxLength: 510
             }
         }
     ],

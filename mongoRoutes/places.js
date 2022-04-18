@@ -27,14 +27,12 @@ router.get('/api/mongodb/places/:place_id', (req, res) => {
 });
 
 router.post('/api/mongodb/places', async (req, res) => {
-  await Place.create({ placeName: req.body.placeName }, 
-    (err, place) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.send(place);
-      }
-  });
+  try {
+    const place = await Place.create({ placeName: req.body.placeName });
+    res.send(place);
+  } catch (error) {
+    res.send(error)
+  }
 });
 
 router.delete('/api/mongodb/places/:place_id', (req, res) => {
