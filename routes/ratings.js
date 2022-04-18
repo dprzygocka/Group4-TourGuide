@@ -13,9 +13,9 @@ router.get('/api/mysql/ratings', (req, res) => {
     }
     const sortColumn = req.query.sortColumn || `${ratingType}_id`;
     const direction = req.query.direction || 'ASC';
-    const size = req.query.size || 10;
+    const size = Number(req.query.size) || 10;
     //paging starts from 0
-    const page = req.query.page - 1 || 0;
+    const page = Number(req.query.page - 1) || 0;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         pool.getConnection((err, db) => {
             let query = `CALL PaginateSort(?, ?, ?, ?, ?)`;
