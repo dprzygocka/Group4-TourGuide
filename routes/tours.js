@@ -7,9 +7,9 @@ const {checkDirection, checkSortColumn} = require('../models/Utils');
 router.get('/api/mysql/tours', async(req, res) => {
     const sortColumn = req.query.sortColumn || 'tour_id';
     const direction = req.query.direction || 'ASC';
-    const size = req.query.size || 10;
+    const size = Number(req.query.size) || 10;
     //paging starts from 0
-    const page = req.query.page - 1 || 0;
+    const page = Number(req.query.page - 1) || 0;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         try {
             const tours = await sequelize.query(`CALL PaginateSort(:table, :column, :direction, :size, :page)`,
@@ -80,7 +80,8 @@ router.post('/api/mysql/tours', async(req, res) => {
             distance: req.body.distance,
             description: req.body.description,
             placeOfDeparture: req.body.placeOfDeparture,
-            placeOfDestination: req.body.placeOfDestination
+            placeOfDestination: req.body.placeOfDestination,
+            isActive: req.body.isActive
         })
         res.send(tour);
     } catch (error) {

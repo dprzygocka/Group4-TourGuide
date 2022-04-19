@@ -37,9 +37,13 @@ app.use(bookingsRouter.router);
 //routers monogo
 const placesMongoRouter = require("./mongoRoutes/places.js");
 const guidesMongoRouter = require("./mongoRoutes/guides.js");
+const customersMongoRouter = require("./mongoRoutes/customers.js");
+const toursMongoRouter = require("./mongoRoutes/tours.js");
 
 app.use(placesMongoRouter.router);
 app.use(guidesMongoRouter.router);
+app.use(customersMongoRouter.router);
+app.use(toursMongoRouter.router);
 
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
