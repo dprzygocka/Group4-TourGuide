@@ -16,7 +16,7 @@ router.get('/api/mongodb/customers', async (req, res) => {
     sortData[sortColumn] = direction;
         if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         try {
-            const customers = await Customer.find().skip(page).limit(size).sort(sortData);
+            const customers = await Customer.find().skip(page).limit(size).sort(sortData).exec();
             res.send(customers);
         } catch (error) {
             res.send(error);
@@ -79,6 +79,45 @@ router.post('/api/mongodb/customers/login', async (req, res) => {
     } catch (error) {
         res.send(error);
     }
+});
+
+router.patch('/api/mongodb/customers/unregister', async (req, res) => {
+    try {
+		const session = await mongodb.startSession();
+		session.startTransaction();
+		try {
+			const customer = await Customer.findOne({
+					email: req.body.email
+			})
+			console.log(customer);
+		/* //if retrieved password matches provided one, set password to null
+			bcrypt.compare(req.body.password, customer.password, async (error, match) => {
+				if (match) {
+					const count = await Customer.findByIdAndUpdate({
+						customer_id
+					}, {
+						$unset: {password: ""}
+					})
+					await session.commitTransaction();
+					if (count[0] !== 0) {
+						res.send("Customer unregistered");
+					} else {
+						res.send("Customer with provided email and password not found");
+					}
+				} else {
+					await session.abortTransaction();
+					res.send(error);
+				}
+			})*/
+		} catch (error) {
+			await session.abortTransaction();
+			res.send(error);
+		}
+		await session.endSession();
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
 });
 
 module.exports = {

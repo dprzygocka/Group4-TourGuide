@@ -1,9 +1,15 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-mongoose.connect(process.env.MONGODB_URI, { autoIndex: true });
+(async () => {
+    const database = await mongoose.connect(process.env.MONGODB_URI_RS, { 
+        autoIndex: true ,
+        retryWrites: false,
+    })
+    module.exports = { database };
+})();
 
-const database = mongoose.connection
+/*const database = mongoose.connection
 
 database.on('error', (error) => {
     console.log(error)
@@ -11,6 +17,6 @@ database.on('error', (error) => {
 
 database.once('connected', () => {
     console.log('Database Connected');
-})
+})*/
 
-module.exports = { database };
+//module.exports = { database };
