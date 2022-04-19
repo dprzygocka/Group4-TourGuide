@@ -120,31 +120,6 @@ router.delete('/api/mysql/ratings/:rating_id', (req, res) => {
     });
 });
 
-router.put('/api/mysql/ratings/:rating_id', (req, res) => {
-    const ratingType = req.query.ratingType;
-    if (!ratingType || (ratingType !== 'guide_rating' && ratingType !== 'tour_rating')) {
-        res.send({
-            message: 'No results',
-        });
-        return;
-    }
-    pool.getConnection((err, db) => {
-        let query = `UPDATE ${ratingType} SET schedule_id = ?, customer_id = ?, rating = ?, comment = ? WHERE ${ratingType}_id = ?`;
-        db.query(query, [req.body.scheduleId, req.body.customerId, req.body.rating, req.body.comment, req.params.rating_id], (error, result, fields) => {
-            if (result && result.affectedRows === 1) {
-                res.send({
-                    message: 'Rating successfully updated.',
-                });
-            } else {
-                res.send({
-                    message: 'Something went wrong',
-                });
-            }
-        });
-        db.release();
-    });
-});
-
 //update one field
 router.patch('/api/mysql/ratings/:rating_id', (req, res) => {
     const ratingType = req.query.ratingType;
@@ -155,21 +130,12 @@ router.patch('/api/mysql/ratings/:rating_id', (req, res) => {
         return;
     }
 
-    const fieldName = req.body.fieldName;
-    const fieldValue = req.body.fieldValue;
-    //we can restrict fields to update here
-    if (!fieldName || fieldName.includes("rating_id") || !fieldValue ) {
-        res.send({
-            message: 'Nothing to update',
-        });
-        return;
-    }
     pool.getConnection((err, db) => {
-        let query = `UPDATE ${ratingType} SET ${fieldName} = ? WHERE ${ratingType}_id = ?`;
-        db.query(query, [fieldValue, req.params.rating_id], (error, result, fields) => {
+        let query = `UPDATE ${ratingType} SET comment = ? WHERE ${ratingType}_id = ?`;
+        db.query(query, [req.body.comment, req.params.rating_id], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({
-                    message: `Rating ${fieldName} successfully updated.`,
+                    message: `Rating comment successfully updated.`,
                 });
             } else {
                 res.send({

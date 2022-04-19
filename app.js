@@ -14,6 +14,9 @@ app.use(express.json());
 // allow to pass form data
 app.use(express.urlencoded({ extended: true }));
 
+//mongodb
+const mongodb = require('./Database/connection_mongo');
+
 //routers
 const guidesRouter = require("./routes/guides.js");
 const customersRouter = require("./routes/customers.js");
@@ -30,6 +33,13 @@ app.use(toursRouter.router);
 app.use(schedulesRouter.router);
 app.use(ratingsRouter.router);
 app.use(bookingsRouter.router);
+
+//routers monogo
+const placesMongoRouter = require("./mongoRoutes/places.js");
+const guidesMongoRouter = require("./mongoRoutes/guides.js");
+
+app.use(placesMongoRouter.router);
+app.use(guidesMongoRouter.router);
 
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
