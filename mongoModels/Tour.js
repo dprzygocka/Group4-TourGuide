@@ -84,4 +84,4 @@ const tourSchema = new mongoose.Schema({
 //create text index
 tourSchema.index({description: "text"});
 
-module.exports = mongoose.model("Tour", tourSchema);
+module.exports = {"Tour": mongoose.model("Tour", tourSchema), "TourSchema": tourSchema};
