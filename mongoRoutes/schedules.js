@@ -36,6 +36,40 @@ router.get('/api/mongodb/schedules/:schedule_id', async (req, res) => {
     }
 });
 
+router.post('/api/mongodb/schedules', async(req, res) => {
+    console.log('here');
+    try {
+        const schedule = await Schedule.create({
+            schedule_datetime: req.body.dateTime,
+            guide: {
+                firstName: req.body.guide.firstName, 
+                lastName:  req.body.guide.lastName, 
+                license: req.body.guide.license,
+                phone: req.body.guide.phone,
+                email: req.body.guide.email,
+                contractEndDate: req.body.guide.contractEndDate
+            },
+            tour: {
+                difficulty: req.body.tour.difficulty,
+                price: req.body.tour.price,
+                duration: req.body.tour.duration,
+                number_of_spots: req.body.tour.numberOfSpots,
+                age_limit: req.body.tour.ageLimit,
+                distance: req.body.tour.distance,
+                description: req.body.tour.description,
+                place_of_departure_name: req.body.tour.placeOfDeparture,
+                place_of_destination_name: req.body.tour.placeOfDestination,
+                is_active: req.body.tour.isActive
+            }
+        })
+        res.send(schedule);
+    } catch (error) {
+        console.log(error);
+        res.send(error);
+    }
+});
+
+
 module.exports = {
   router,
 };
