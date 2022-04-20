@@ -131,7 +131,7 @@ CREATE TRIGGER set_number_of_spots
 	END $$ 
 DELIMITER ;
 
-DROP TRIGGER IF EXISTS check_booking_insert;
+/*DROP TRIGGER IF EXISTS check_booking_insert;
 DELIMITER $$
 CREATE TRIGGER check_booking_insert
 	BEFORE INSERT ON booking
@@ -143,7 +143,7 @@ CREATE TRIGGER check_booking_insert
 			SET MESSAGE_TEXT = "ERROR: You cannot book schedules from the past.";
 		END IF;
 	END $$
-DELIMITER ;
+DELIMITER ;*/
 
 DROP TRIGGER IF EXISTS tour_change_is_active;
 DELIMITER $$
