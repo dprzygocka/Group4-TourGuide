@@ -27,6 +27,15 @@ router.get('/api/mongodb/schedules', async(req, res) => {
 });
 
 
+router.get('/api/mongodb/schedules/:schedule_id', async (req, res) => {
+    try {
+        const schedule = await Schedule.findById(req.params.schedule_id);
+        res.send(schedule);
+    } catch (error) {
+        res.send(error);
+    }
+});
+
 module.exports = {
   router,
 };
