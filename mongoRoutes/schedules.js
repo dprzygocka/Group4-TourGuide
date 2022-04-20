@@ -69,6 +69,14 @@ router.post('/api/mongodb/schedules', async(req, res) => {
     }
 });
 
+router.delete('/api/mongodb/schedules/:schedule_id', async (req, res) => {
+    try {
+        await Schedule.findByIdAndDelete(req.params.schedule_id)
+        res.send('Schedule deleted');
+    } catch (error) {
+        res.send(error);
+    }
+});
 
 module.exports = {
   router,
