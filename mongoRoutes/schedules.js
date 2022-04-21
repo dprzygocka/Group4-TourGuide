@@ -37,11 +37,12 @@ router.get('/api/mongodb/schedules/:schedule_id', async (req, res) => {
 });
 
 router.post('/api/mongodb/schedules', async(req, res) => {
-    console.log('here');
     try {
         const schedule = await Schedule.create({
             schedule_datetime: req.body.dateTime,
+            //pass also ids here?
             guide: {
+                _id: req.body.guide.guide_id,
                 firstName: req.body.guide.firstName, 
                 lastName:  req.body.guide.lastName, 
                 license: req.body.guide.license,
@@ -50,6 +51,7 @@ router.post('/api/mongodb/schedules', async(req, res) => {
                 contractEndDate: req.body.guide.contractEndDate
             },
             tour: {
+                _id: req.body.tour.tour_id,
                 difficulty: req.body.tour.difficulty,
                 price: req.body.tour.price,
                 duration: req.body.tour.duration,
@@ -64,7 +66,6 @@ router.post('/api/mongodb/schedules', async(req, res) => {
         })
         res.send(schedule);
     } catch (error) {
-        console.log(error);
         res.send(error);
     }
 });
