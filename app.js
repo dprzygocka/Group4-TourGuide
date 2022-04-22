@@ -25,6 +25,7 @@ const toursRouter = require("./routes/tours.js");
 const schedulesRouter = require("./routes/schedules.js");
 const ratingsRouter = require("./routes/ratings.js");
 const bookingsRouter = require("./routes/bookings.js");
+const viewsRouter = require("./routes/views.js");
 
 app.use(guidesRouter.router);
 app.use(customersRouter.router);
@@ -33,6 +34,7 @@ app.use(toursRouter.router);
 app.use(schedulesRouter.router);
 app.use(ratingsRouter.router);
 app.use(bookingsRouter.router);
+app.use(viewsRouter.router);
 
 //routers monogo
 const placesMongoRouter = require("./mongoRoutes/places.js");
