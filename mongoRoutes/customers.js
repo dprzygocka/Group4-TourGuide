@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const Customer = require('../mongoModels/Customer.js');
 const bcrypt = require("bcrypt");
-const mongodb = require('../Database/connection_mongo');
+const {database} = require('../Database/connection_mongo');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 const saltRounds = 15;
@@ -39,6 +39,7 @@ router.get('/api/mongodb/customers/:customer_id', async (req, res) => {
 
 router.post('/api/mongodb/customers/register', async (req, res) => {
     bcrypt.hash(req.body.password, saltRounds, async (error, hash) => {
+        console.log(hash);
         if (!error) {
             try {
                 const customer = await Customer.create({
@@ -79,6 +80,35 @@ router.post('/api/mongodb/customers/login', async (req, res) => {
     } catch (error) {
         res.send(error);
     }
+});
+
+router.patch('/api/mongodb/customers/unregister', async (req, res) => {
+    try {
+		const session = await database.startSession();
+		session.startTransaction();
+        const customer = await Customer.findOne({
+                email: req.body.email
+        }).exec();
+        //if retrieved password matches provided one, set password to null
+        bcrypt.compare(req.body.password, customer.password, async (error, match) => {
+            if (match) {
+                const count = await Customer.findByIdAndUpdate(
+                    customer._id
+                , {
+                    $unset: {password: ""}
+                })
+                await session.commitTransaction();
+                await session.endSession();
+                if (count[0] !== 0) {
+                    res.send("Customer unregistered");
+                } else {
+                    res.send("Customer with provided email and password not found");
+                }
+            }
+        })
+	} catch (error) {
+		res.send(error);
+	}
 });
 
 module.exports = {
