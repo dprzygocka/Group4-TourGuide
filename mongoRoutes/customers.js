@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const {database} = require('../Database/connection_mongo');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 const Schedule = require('../mongoModels/Schedule.js');
+const mongoose = require('mongoose');
 
 const saltRounds = 15;
 
@@ -140,6 +141,7 @@ router.patch('/api/mongodb/bookings/:customer_id', async (req, res) => {
         const customer = await Customer.findByIdAndUpdate(req.params.customer_id, {
             $push: {
                 bookings: {
+                    _id: mongoose.Types.ObjectId(),
                     number_of_spots: req.body.numberOfSpots,
                     total_price: Number(schedule.tour.price * req.body.numberOfSpots),
                     booking_date_time: req.body.dateTime,
