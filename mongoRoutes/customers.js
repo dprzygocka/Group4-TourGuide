@@ -134,16 +134,14 @@ router.patch('/api/mongodb/bookings/:customer_id', async (req, res) => {
         if (schedule.tour.number_of_spots < req.body.numberOfSpots) {
             throw new Error('Not enough free spots.');
         }
-        const schedule2 = await Schedule.findByIdAndUpdate(schedule._id, {
-            tour: {
-                number_of_spots: schedule.tour.number_of_spots - req.body.numberOfSpots
-            }
+        await Schedule.findByIdAndUpdate(schedule._id, {
+            $set: {'tour.number_of_spots': schedule.tour.number_of_spots - req.body.numberOfSpots}
         })
         const customer = await Customer.findByIdAndUpdate(req.params.customer_id, {
             $push: {
                 bookings: {
                     number_of_spots: req.body.numberOfSpots,
-                    total_price: schedule.tour.price * req.body.numberOfSpots,
+                    total_price: Number(schedule.tour.price * req.body.numberOfSpots),
                     booking_date_time: req.body.dateTime,
                     schedule_id: schedule._id
                 }
