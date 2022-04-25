@@ -3,6 +3,7 @@ const Customer = require('../mongoModels/Customer.js');
 const bcrypt = require("bcrypt");
 const {database} = require('../Database/connection_mongo');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
+const Schedule = require('../mongoModels/Schedule.js');
 
 const saltRounds = 15;
 
@@ -82,9 +83,9 @@ router.post('/api/mongodb/customers/login', async (req, res) => {
 });
 
 router.patch('/api/mongodb/customers/unregister', async (req, res) => {
-    const session = await database.startSession();
-    session.startTransaction();
     try {
+        const session = await database.startSession();
+        session.startTransaction();
         const customer = await Customer.findOne({
                 email: req.body.email
         }).exec();
@@ -117,6 +118,46 @@ router.patch('/api/mongodb/customers/unregister', async (req, res) => {
 	}
 });
 
+router.patch('/api/mongodb/bookings/:customer_id', async (req, res) => {
+    const session = await database.startSession();
+    session.startTransaction();
+    try {
+        const schedule = await Schedule.findById(
+            req.body.scheduleId,
+            'schedule_datetime tour.number_of_spots tour.price'
+        ).exec();
+        if (schedule && schedule.schedule_datetime <= new Date(req.body.dateTime)) {
+            throw new Error('You cannot book schedules from the past.');
+        } else if (!schedule) {
+            throw new Error('Selected schedule doesn\'t exist.');
+        }
+        if (schedule.tour.number_of_spots < req.body.numberOfSpots) {
+            throw new Error('Not enough free spots.');
+        }
+        const schedule2 = await Schedule.findByIdAndUpdate(schedule._id, {
+            tour: {
+                number_of_spots: schedule.tour.number_of_spots - req.body.numberOfSpots
+            }
+        })
+        const customer = await Customer.findByIdAndUpdate(req.params.customer_id, {
+            $push: {
+                bookings: {
+                    number_of_spots: req.body.numberOfSpots,
+                    total_price: schedule.tour.price * req.body.numberOfSpots,
+                    booking_date_time: req.body.dateTime,
+                    schedule_id: schedule._id
+                }
+            }
+        }).exec();
+        await session.commitTransaction();
+        await session.endSession();
+        res.send(customer.bookings);
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+		res.send(error.message);
+	}
+});
 
 module.exports = {
   router,
