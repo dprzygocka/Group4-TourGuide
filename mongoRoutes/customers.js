@@ -39,7 +39,6 @@ router.get('/api/mongodb/customers/:customer_id', async (req, res) => {
 
 router.post('/api/mongodb/customers/register', async (req, res) => {
     bcrypt.hash(req.body.password, saltRounds, async (error, hash) => {
-        console.log(hash);
         if (!error) {
             try {
                 const customer = await Customer.create({
@@ -83,9 +82,9 @@ router.post('/api/mongodb/customers/login', async (req, res) => {
 });
 
 router.patch('/api/mongodb/customers/unregister', async (req, res) => {
+    const session = await database.startSession();
+    session.startTransaction();
     try {
-		const session = await database.startSession();
-		session.startTransaction();
         const customer = await Customer.findOne({
                 email: req.body.email
         }).exec();
@@ -104,12 +103,20 @@ router.patch('/api/mongodb/customers/unregister', async (req, res) => {
                 } else {
                     res.send("Customer with provided email and password not found");
                 }
+                return;
+            } else {
+                await session.abortTransaction();
+                await session.endSession();
+                res.send("Customer already unregistered");
             }
         })
 	} catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
 		res.send(error);
 	}
 });
+
 
 module.exports = {
   router,
