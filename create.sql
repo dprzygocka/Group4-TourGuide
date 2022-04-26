@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`customer` (
   `password` VARCHAR(100) NULL,
   `phone` VARCHAR(20) NOT NULL,
   PRIMARY KEY (`customer_id`),
-  UNIQUE INDEX `customer_id_UNIQUE` (`customer_id` ASC) VISIBLE,
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
+  UNIQUE INDEX `customer_id_UNIQUE` (`customer_id` ASC),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC))
 ENGINE = InnoDB;
 
 
@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`place` (
   `place_id` INT NOT NULL AUTO_INCREMENT,
   `place_name` NVARCHAR(120) NOT NULL,
   PRIMARY KEY (`place_id`),
-  UNIQUE INDEX `place_id_UNIQUE` (`place_id` ASC) VISIBLE,
-  UNIQUE INDEX `place_name_UNIQUE` (`place_name` ASC) VISIBLE)
+  UNIQUE INDEX `place_id_UNIQUE` (`place_id` ASC),
+  UNIQUE INDEX `place_name_UNIQUE` (`place_name` ASC))
 ENGINE = InnoDB;
 
 
@@ -60,9 +60,9 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`tour` (
   `place_of_destination_id` INT NULL,
   `is_active` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`tour_id`),
-  UNIQUE INDEX `tour_id_UNIQUE` (`tour_id` ASC) VISIBLE,
-  INDEX `tour_place_idx` (`place_of_destination_id` ASC) VISIBLE,
-  INDEX `departure_place_idx` (`place_of_departure_id` ASC) VISIBLE,
+  UNIQUE INDEX `tour_id_UNIQUE` (`tour_id` ASC),
+  INDEX `tour_place_idx` (`place_of_destination_id` ASC),
+  INDEX `departure_place_idx` (`place_of_departure_id` ASC),
   CONSTRAINT `tour_place`
     FOREIGN KEY (`place_of_destination_id`)
     REFERENCES `tourguide`.`place` (`place_id`)
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`guide` (
   `rating` DECIMAL(3,2) NULL,
   `contract_end_date` DATE NOT NULL,
   PRIMARY KEY (`guide_id`),
-  UNIQUE INDEX `guide_id_UNIQUE` (`guide_id` ASC) VISIBLE)
+  UNIQUE INDEX `guide_id_UNIQUE` (`guide_id` ASC))
 ENGINE = InnoDB;
 
 
@@ -103,9 +103,9 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`schedule` (
   `tour_id` INT NOT NULL DEFAULT -1,
   `guide_id` INT NULL,
   PRIMARY KEY (`schedule_id`),
-  INDEX `tour_schedule_idx` (`tour_id` ASC) VISIBLE,
-  UNIQUE INDEX `schedule_id_UNIQUE` (`schedule_id` ASC) VISIBLE,
-  INDEX `guide_schedule_idx` (`guide_id` ASC) VISIBLE,
+  INDEX `tour_schedule_idx` (`tour_id` ASC),
+  UNIQUE INDEX `schedule_id_UNIQUE` (`schedule_id` ASC),
+  INDEX `guide_schedule_idx` (`guide_id` ASC),
   CONSTRAINT `tour_schedule`
     FOREIGN KEY (`tour_id`)
     REFERENCES `tourguide`.`tour` (`tour_id`)
@@ -128,8 +128,8 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`booking` (
   `booking_date_time` DATETIME NOT NULL,
   `customer_id` INT NOT NULL,
   `schedule_id` INT NOT NULL,
-  INDEX `customer_booking_idx` (`customer_id` ASC) VISIBLE,
-  INDEX `schedule_booking_idx` (`schedule_id` ASC) VISIBLE, -- ask about composite, this doesnt seem necessary but the one above does?
+  INDEX `customer_booking_idx` (`customer_id` ASC),
+  INDEX `schedule_booking_idx` (`schedule_id` ASC), -- ask about composite, this doesnt seem necessary but the one above does?
   PRIMARY KEY (`schedule_id`, `customer_id`),
   UNIQUE (`schedule_id`, `customer_id`), -- ask cause same as primary key
   CONSTRAINT `customer_booking`
@@ -155,9 +155,9 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`guide_rating` (
   `rating` DECIMAL(2,1) NOT NULL,
   `comment` NVARCHAR(510) NULL,
   PRIMARY KEY (`guide_rating_id`),
-  UNIQUE INDEX `guide_rating_id_UNIQUE` (`guide_rating_id` ASC) VISIBLE,
-  INDEX `customer_rate_guide_idx` (`customer_id` ASC) VISIBLE,
-  INDEX `rated_guide_idx` (`schedule_id` ASC) VISIBLE,
+  UNIQUE INDEX `guide_rating_id_UNIQUE` (`guide_rating_id` ASC),
+  INDEX `customer_rate_guide_idx` (`customer_id` ASC),
+  INDEX `rated_guide_idx` (`schedule_id` ASC),
   CONSTRAINT `customer_rate_guide`
     FOREIGN KEY (`customer_id`)
     REFERENCES `tourguide`.`customer` (`customer_id`)
@@ -181,9 +181,9 @@ CREATE TABLE IF NOT EXISTS `tourguide`.`tour_rating` (
   `rating` DECIMAL(2,1) NOT NULL,
   `comment` NVARCHAR(510) NULL,
   PRIMARY KEY (`tour_rating_id`),
-  INDEX `customer_rate_tour_idx` (`customer_id` ASC) VISIBLE,
-  UNIQUE INDEX `tour_rating_id_UNIQUE` (`tour_rating_id` ASC) VISIBLE,
-  INDEX `rated_tour_idx` (`schedule_id` ASC) VISIBLE,
+  INDEX `customer_rate_tour_idx` (`customer_id` ASC),
+  UNIQUE INDEX `tour_rating_id_UNIQUE` (`tour_rating_id` ASC),
+  INDEX `rated_tour_idx` (`schedule_id` ASC),
   CONSTRAINT `customer_rate_tour`
     FOREIGN KEY (`customer_id`)
     REFERENCES `tourguide`.`customer` (`customer_id`)
