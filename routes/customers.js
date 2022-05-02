@@ -1,7 +1,7 @@
 const router = require('express').Router();
 //const { pool } = require('../database/connection');
 const bcrypt = require("bcrypt");
-const { Customer } = require('../models/customer');
+const { Customer } = require('../models/Customer');
 const { sequelize } = require('../database/connection');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 const saltRounds = 15;
