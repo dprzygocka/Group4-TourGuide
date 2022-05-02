@@ -50,7 +50,14 @@ router.post('/api/mysql/bookings', (req, res) => {
         await db.promise().beginTransaction();
         //console.log('after transaction start');
         try {
-            let query = 'SELECT number_of_free_spots FROM schedule WHERE schedule.schedule_id = ?';
+            let query = 'SELECT schedule_date_time FROM schedule WHERE schedule.schedule_id = ?';
+            await db.promise().query(query, [req.body.scheduleId])
+                .then(([result, fields]) => {
+                    if (result && result[0].schedule_date_time <= req.body.dateTime) {
+                        throw new Error('You cannot book schedules from the past.');
+                    }
+                })
+            query = 'SELECT number_of_free_spots FROM schedule WHERE schedule.schedule_id = ?';
             let number_of_free_spots;
             let total_price;
             //console.log('before get number of free spots');
