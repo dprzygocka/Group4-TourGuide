@@ -17,9 +17,10 @@
                 "distance": 15,
                 "rating": 4.2,
                 "description": "example descripton",
-                "place_of_departure": "base",
-                "place_of_destination": "somewhere",
-                "is_active": 1
+                "place_of_departure_name": "base",
+                "place_of_destination_name": "somewhere",
+                "is_active": 1,
+                "tour_ratings": []
             }
         ],
         "schedules": [
@@ -37,7 +38,6 @@
                     "rating": 4.1,
                     "contract_end_date": "2032-09-10"
                 },
-                "tour_ratings": [],
                 "tour": {
                     "_id": 1,
                     "difficulty": "EASY",

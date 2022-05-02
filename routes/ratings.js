@@ -5,7 +5,7 @@ const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 router.get('/api/mysql/ratings', (req, res) => {
     const ratingType = req.query.ratingType; //path variable
-    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
+    if (!ratingType || (ratingType !== 'guide_rating' && ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
@@ -48,7 +48,7 @@ router.get('/api/mysql/ratings', (req, res) => {
 
 router.get('/api/mysql/ratings/:rating_id', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
+    if (!ratingType || (ratingType !== 'guide_rating' && ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
@@ -69,9 +69,41 @@ router.get('/api/mysql/ratings/:rating_id', (req, res) => {
     });
 });
 
+router.get('/api/mysql/ratings/guides/:guide_id', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'SELECT * FROM tourguide.guide_rating_view WHERE guide_id = ?;';
+        db.query(query, [req.params.guide_id], (error, result, fields) => {
+            if (result && result.length) {
+                res.send(result);
+            } else {
+                res.send({
+                    message: 'Empty view.',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
+router.get('/api/mysql/ratings/tours/:tour_id', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'SELECT * FROM tourguide.tour_rating_view WHERE tour_id = ?;';
+        db.query(query, [req.params.tour_id], (error, result, fields) => {
+            if (result && result.length) {
+                res.send(result);
+            } else {
+                res.send({
+                    message: 'Empty view.',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 router.post('/api/mysql/ratings', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
+    if (!ratingType || (ratingType !== 'guide_rating' && ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
@@ -97,7 +129,7 @@ router.post('/api/mysql/ratings', (req, res) => {
 
 router.delete('/api/mysql/ratings/:rating_id', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
+    if (!ratingType || (ratingType !== 'guide_rating' && ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
@@ -120,56 +152,22 @@ router.delete('/api/mysql/ratings/:rating_id', (req, res) => {
     });
 });
 
-router.put('/api/mysql/ratings/:rating_id', (req, res) => {
-    const ratingType = req.query.ratingType;
-    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
-        res.send({
-            message: 'No results',
-        });
-        return;
-    }
-    pool.getConnection((err, db) => {
-        let query = `UPDATE ${ratingType} SET schedule_id = ?, customer_id = ?, rating = ?, comment = ? WHERE ${ratingType}_id = ?`;
-        db.query(query, [req.body.scheduleId, req.body.customerId, req.body.rating, req.body.comment, req.params.rating_id], (error, result, fields) => {
-            if (result && result.affectedRows === 1) {
-                res.send({
-                    message: 'Rating successfully updated.',
-                });
-            } else {
-                res.send({
-                    message: 'Something went wrong',
-                });
-            }
-        });
-        db.release();
-    });
-});
-
 //update one field
 router.patch('/api/mysql/ratings/:rating_id', (req, res) => {
     const ratingType = req.query.ratingType;
-    if (!ratingType && (ratingType !== 'guide_rating' || ratingType !== 'tour_rating')) {
+    if (!ratingType || (ratingType !== 'guide_rating' && ratingType !== 'tour_rating')) {
         res.send({
             message: 'No results',
         });
         return;
     }
 
-    const fieldName = req.body.fieldName;
-    const fieldValue = req.body.fieldValue;
-    //we can restrict fields to update here
-    if (!fieldName || fieldName.includes("rating_id") || !fieldValue ) {
-        res.send({
-            message: 'Nothing to update',
-        });
-        return;
-    }
     pool.getConnection((err, db) => {
-        let query = `UPDATE ${ratingType} SET ${fieldName} = ? WHERE ${ratingType}_id = ?`;
-        db.query(query, [fieldValue, req.params.rating_id], (error, result, fields) => {
+        let query = `UPDATE ${ratingType} SET comment = ? WHERE ${ratingType}_id = ?`;
+        db.query(query, [req.body.comment, req.params.rating_id], (error, result, fields) => {
             if (result && result.affectedRows === 1) {
                 res.send({
-                    message: `Rating ${fieldName} successfully updated.`,
+                    message: `Rating comment successfully updated.`,
                 });
             } else {
                 res.send({

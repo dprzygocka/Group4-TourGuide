@@ -9,7 +9,12 @@ router.get('/api/mongodb/places', async (req, res) => {
   //paging starts from 0
   const page = req.query.page - 1 || 0;
   if (checkSortColumn(sortColumn) && checkDirection(direction)) {
-      //pagination 
+      try {
+        const places = await Place.find().skip(page).limit(size).sort(sortData);
+        res.send(places);
+      } catch (error) {
+          res.send(error);
+      } 
   } else {
       res.send({
           message: `Check your input:\nsort column: ${sortColumn}\ndirection: ${direction}\nsize: ${size}\npage: ${page}\n`
@@ -22,14 +27,12 @@ router.get('/api/mongodb/places/:place_id', (req, res) => {
 });
 
 router.post('/api/mongodb/places', async (req, res) => {
-  await Place.create({ placeName: req.body.placeName }, 
-    (err, place) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.send(place);
-      }
-  });
+  try {
+    const place = await Place.create({ placeName: req.body.placeName });
+    res.send(place);
+  } catch (error) {
+    res.send(error)
+  }
 });
 
 router.delete('/api/mongodb/places/:place_id', (req, res) => {

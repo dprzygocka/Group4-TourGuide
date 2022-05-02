@@ -1,8 +1,28 @@
 const router = require('express').Router();
-const { pool } = require('../database/connection');
+const { pool, sequelize } = require('../database/connection');
 const { Schedule } = require('../models/Schedule');
+const { checkDateFormat } = require('../models/Utils');
 const { Guide } = require('../models/Guide');
 const { Tour } = require('../models/Tour');
+
+router.get('/api/mysql/schedules/range', (req, res) => {
+    const startDate = req.query.start_date || '2000-04-29';
+    const endDate = req.query.end_date || '2035-12-31';
+    if (checkDateFormat(startDate) && checkDateFormat(endDate)) {
+        sequelize.query(`CALL ScheduleBetweenDates(:start_date, :end_date)`,
+            {
+                replacements: {
+                    start_date: startDate, 
+                    end_date: endDate,
+                }
+            })
+        .then((schedules) => res.send(schedules)).catch((err) => res.send(err));       
+    } else {
+        res.send({
+            message: `Check your input format YYYY-MM-DD:\nstart date: ${startDate}\nend date: ${endDate}`
+        })
+    }
+});
 
 router.get('/api/mysql/schedules', (req, res) => {
     pool.getConnection((err, db) => {
@@ -36,6 +56,22 @@ router.get('/api/mysql/schedules/:schedule_id', (req, res) => {
             } else {
                 res.send({
                     message: 'No results',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
+router.get('/api/mysql/schedules/all', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'SELECT * FROM tourguide.tour_place_schedule;';
+        db.query(query, [], (error, result, fields) => {
+            if (result && result.length) {
+                res.send(result);
+            } else {
+                res.send({
+                    message: 'Empty view.',
                 });
             }
         });
