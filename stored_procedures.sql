@@ -30,7 +30,7 @@ DROP PROCEDURE IF EXISTS ScheduleBetweenDates;
 DELIMITER $$ 
 CREATE PROCEDURE ScheduleBetweenDates(IN start_date DATE, IN end_date DATE)
 BEGIN
-	SET @sql = CONCAT('SELECT schedule.*, guide.first_name, guide.last_name, tour.difficulty, tour.duration, tour.description, place.place_name FROM schedule join guide on schedule.guide_id = guide.guide_id join tour on schedule.tour_id = tour.tour_id join place on tour.place_of_destination_id = place.place_id WHERE schedule.schedule_date_time BETWEEN "', start_date, '" AND "', end_date,'"');
+	SET @sql = CONCAT('SELECT schedule.*, guide.first_name, guide.last_name, tour.difficulty, tour.duration, tour.description, place.place_name FROM schedule join guide on schedule.guide_id = guide.guide_id join tour on schedule.tour_id = tour.tour_id join place on tour.place_of_destination_id = place.place_id WHERE CAST(schedule.schedule_date_time AS DATE) BETWEEN "', start_date, '" AND "', end_date,'"');
     PREPARE stmt1 FROM @sql;
     EXECUTE stmt1;
     DEALLOCATE PREPARE stmt1;
