@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //mongodb
-const mongodb = require('./database/connection_mongo');
+//const mongodb = require('./database/connection_mongo');
 
 //routers
 const guidesRouter = require("./routes/guides.js");
@@ -36,18 +36,6 @@ app.use(ratingsRouter.router);
 app.use(bookingsRouter.router);
 app.use(mongoTransferRouter.router);
 
-//routers monogo
-const placesMongoRouter = require("./mongoRoutes/places.js");
-const guidesMongoRouter = require("./mongoRoutes/guides.js");
-const customersMongoRouter = require("./mongoRoutes/customers.js");
-const toursMongoRouter = require("./mongoRoutes/tours.js");
-const schedulesMongoRouter = require("./mongoRoutes/schedules.js");
-
-app.use(placesMongoRouter.router);
-app.use(guidesMongoRouter.router);
-app.use(customersMongoRouter.router);
-app.use(toursMongoRouter.router);
-app.use(schedulesMongoRouter.router);
 
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
