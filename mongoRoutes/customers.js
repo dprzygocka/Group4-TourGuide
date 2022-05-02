@@ -18,7 +18,7 @@ router.get('/api/mongodb/customers', async (req, res) => {
     sortData[sortColumn] = direction;
         if (checkSortColumn(sortColumn) && checkDirection(direction)) {
         try {
-            const customers = await Customer.find().skip(page).limit(size).sort(sortData);
+            const customers = await Customer.find().skip(page).limit(size).sort(sortData).exec();
             res.send(customers);
         } catch (error) {
             res.send(error);
@@ -115,7 +115,7 @@ router.patch('/api/mongodb/customers/unregister', async (req, res) => {
 	} catch (error) {
         await session.abortTransaction();
         await session.endSession();
-		res.send(error);
+		    res.send(error);
 	}
 });
 
