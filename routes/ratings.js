@@ -69,6 +69,38 @@ router.get('/api/mysql/ratings/:rating_id', (req, res) => {
     });
 });
 
+router.get('/api/mysql/ratings/guides/:guide_id', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'SELECT * FROM tourguide.guide_rating_view WHERE guide_id = ?;';
+        db.query(query, [req.params.guide_id], (error, result, fields) => {
+            if (result && result.length) {
+                res.send(result);
+            } else {
+                res.send({
+                    message: 'Empty view.',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
+router.get('/api/mysql/ratings/tours/:tour_id', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'SELECT * FROM tourguide.tour_rating_view WHERE tour_id = ?;';
+        db.query(query, [req.params.tour_id], (error, result, fields) => {
+            if (result && result.length) {
+                res.send(result);
+            } else {
+                res.send({
+                    message: 'Empty view.',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 router.post('/api/mysql/ratings', (req, res) => {
     const ratingType = req.query.ratingType;
     if (!ratingType || (ratingType !== 'guide_rating' && ratingType !== 'tour_rating')) {
