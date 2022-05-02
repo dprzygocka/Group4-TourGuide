@@ -1,8 +1,10 @@
 const router = require('express').Router();
 const Customer = require('../mongoModels/Customer.js');
 const bcrypt = require("bcrypt");
-const mongodb = require('../Database/connection_mongo');
+const {database} = require('../Database/connection_mongo');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
+const Schedule = require('../mongoModels/Schedule.js');
+const mongoose = require('mongoose');
 
 const saltRounds = 15;
 
@@ -83,40 +85,77 @@ router.post('/api/mongodb/customers/login', async (req, res) => {
 
 router.patch('/api/mongodb/customers/unregister', async (req, res) => {
     try {
-		const session = await mongodb.startSession();
-		session.startTransaction();
-		try {
-			const customer = await Customer.findOne({
-					email: req.body.email
-			})
-			console.log(customer);
-		/* //if retrieved password matches provided one, set password to null
-			bcrypt.compare(req.body.password, customer.password, async (error, match) => {
-				if (match) {
-					const count = await Customer.findByIdAndUpdate({
-						customer_id
-					}, {
-						$unset: {password: ""}
-					})
-					await session.commitTransaction();
-					if (count[0] !== 0) {
-						res.send("Customer unregistered");
-					} else {
-						res.send("Customer with provided email and password not found");
-					}
-				} else {
-					await session.abortTransaction();
-					res.send(error);
-				}
-			})*/
-		} catch (error) {
-			await session.abortTransaction();
-			res.send(error);
-		}
-		await session.endSession();
+        const session = await database.startSession();
+        session.startTransaction();
+        const customer = await Customer.findOne({
+                email: req.body.email
+        }).exec();
+        //if retrieved password matches provided one, set password to null
+        bcrypt.compare(req.body.password, customer.password, async (error, match) => {
+            if (match) {
+                const count = await Customer.findByIdAndUpdate(
+                    customer._id
+                , {
+                    $unset: {password: ""}
+                })
+                await session.commitTransaction();
+                await session.endSession();
+                if (count[0] !== 0) {
+                    res.send("Customer unregistered");
+                } else {
+                    res.send("Customer with provided email and password not found");
+                }
+                return;
+            } else {
+                await session.abortTransaction();
+                await session.endSession();
+                res.send("Customer already unregistered");
+            }
+        })
 	} catch (error) {
-		console.log("error", error);
-		res.send(error);
+        await session.abortTransaction();
+        await session.endSession();
+		    res.send(error);
+	}
+});
+
+router.patch('/api/mongodb/bookings/:customer_id', async (req, res) => {
+    const session = await database.startSession();
+    session.startTransaction();
+    try {
+        const schedule = await Schedule.findById(
+            req.body.scheduleId,
+            'schedule_datetime tour.number_of_spots tour.price'
+        ).exec();
+        if (schedule && schedule.schedule_datetime <= new Date(req.body.dateTime)) {
+            throw new Error('You cannot book schedules from the past.');
+        } else if (!schedule) {
+            throw new Error('Selected schedule doesn\'t exist.');
+        }
+        if (schedule.tour.number_of_spots < req.body.numberOfSpots) {
+            throw new Error('Not enough free spots.');
+        }
+        await Schedule.findByIdAndUpdate(schedule._id, {
+            $set: {'tour.number_of_spots': schedule.tour.number_of_spots - req.body.numberOfSpots}
+        })
+        const customer = await Customer.findByIdAndUpdate(req.params.customer_id, {
+            $push: {
+                bookings: {
+                    _id: mongoose.Types.ObjectId(),
+                    number_of_spots: req.body.numberOfSpots,
+                    total_price: Number(schedule.tour.price * req.body.numberOfSpots),
+                    booking_date_time: req.body.dateTime,
+                    schedule_id: schedule._id
+                }
+            }
+        }).exec();
+        await session.commitTransaction();
+        await session.endSession();
+        res.send(customer.bookings);
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+		res.send(error.message);
 	}
 });
 

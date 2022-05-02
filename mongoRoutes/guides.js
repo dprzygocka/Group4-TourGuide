@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const Guide = require('../mongoModels/Guide.js');
+const {Guide} = require('../mongoModels/Guide.js');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 router.get('/api/mongodb/guides', async (req, res) => {

@@ -28,6 +28,7 @@ const customerSchema = new mongoose.Schema({
         maxLength: 20
     },
     bookings : [{
+        required: false,
         _id: {
             type: mongoose.ObjectId,
             required: true,
