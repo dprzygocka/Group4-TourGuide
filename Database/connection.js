@@ -17,11 +17,20 @@ const sequelize = new Sequelize(
   }
 )
 
+/*
 const pool  = mysql.createPool({
   host     : process.env.HOST,
   database : process.env.DATABASE,
   user     : process.env.USER,
   password : process.env.PASSWORD,
+  connectionLimit : 5,
+}); */
+
+const pool  = mysql.createPool({
+  host     : process.env.MYSQL_AZURE_HOST,
+  database : process.env.MYSQL_AZURE_DATABASE,
+  user     : process.env.MYSQL_AZURE_USER,
+  password : process.env.MYSQL_AZURE_PASSWORD,
   connectionLimit : 5,
 });
 
