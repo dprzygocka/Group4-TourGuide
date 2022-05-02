@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //mongodb
-const mongodb = require('./Database/connection_mongo');
+const mongodb = require('./database/connection_mongo');
 
 //routers
 const guidesRouter = require("./routes/guides.js");
