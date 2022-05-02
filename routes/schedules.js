@@ -63,6 +63,22 @@ router.get('/api/mysql/schedules/:schedule_id', (req, res) => {
     });
 });
 
+router.get('/api/mysql/schedules/all', (req, res) => {
+    pool.getConnection((err, db) => {
+        let query = 'SELECT * FROM tourguide.tour_place_schedule;';
+        db.query(query, [], (error, result, fields) => {
+            if (result && result.length) {
+                res.send(result);
+            } else {
+                res.send({
+                    message: 'Empty view.',
+                });
+            }
+        });
+        db.release();
+    });
+});
+
 router.post('/api/mysql/schedules', (req, res) => {
     pool.getConnection((err, db) => {
         let query = 'INSERT INTO schedule (no_free_spaces, date_time, tour_id, guide_id) VALUES (?, ?, ?, ?)';
