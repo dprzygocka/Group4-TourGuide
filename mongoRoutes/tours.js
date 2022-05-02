@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const {Tour} = require('../mongoModels/Tour.js');
-const mongodb = require('../Database/connection_mongo');
+const mongodb = require('../database/connection_mongo');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 

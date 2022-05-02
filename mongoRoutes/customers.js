@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const Customer = require('../mongoModels/Customer.js');
 const bcrypt = require("bcrypt");
-const {database} = require('../Database/connection_mongo');
+const {database} = require('../database/connection_mongo');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 const Schedule = require('../mongoModels/Schedule.js');
 const mongoose = require('mongoose');
