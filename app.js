@@ -27,6 +27,7 @@ const ratingsRouter = require("./routes/ratings.js");
 const bookingsRouter = require("./routes/bookings.js");
 const mongoTransferRouter = require("./routes/mongoTransfer.js");
 
+
 app.use(guidesRouter.router);
 app.use(customersRouter.router);
 app.use(placesRouter.router);
