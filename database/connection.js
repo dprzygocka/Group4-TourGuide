@@ -11,6 +11,9 @@ const sequelize = new Sequelize(
     },
     host: process.env.HOST,
     dialect: 'mysql',
+    dialectOptions: {
+      socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
+    },
     define: {
       timestamps: false
     }
