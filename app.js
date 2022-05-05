@@ -34,7 +34,6 @@ app.use(schedulesRouter.router);
 app.use(ratingsRouter.router);
 app.use(bookingsRouter.router);
 
-
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
 });
