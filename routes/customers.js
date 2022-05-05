@@ -95,14 +95,13 @@ router.post('/api/mysql/customers/login', async (req, res) => {
 });
 
 router.patch('/api/mysql/customers/unregister', async (req, res) => {
-    const transaction = await sequelize.transaction();
-    try {
-        const customer = await Customer.findOne({
-            where: {
-                email: req.body.email
-            }
-        }, {transaction: transaction})
-        //if retrieved password matches provided one, set password to null
+    const customer = await Customer.findOne({
+        where: {
+            email: req.body.email
+        }
+    })
+    //if retrieved password matches provided one, set password to null
+    if(customer && customer.password) {
         bcrypt.compare(req.body.password, customer.password, async (error, match) => {
             if (match) {
                 const count = await Customer.update({
@@ -111,21 +110,16 @@ router.patch('/api/mysql/customers/unregister', async (req, res) => {
                     where: {
                         email: req.body.email,
                     }
-                }, {transaction: transaction})
-                await transaction.commit();
+                })
                 if (count[0] !== 0) {
                     res.send("Customer unregistered");
                 } else {
                     res.send("Customer with provided email and password not found");
                 }
             } else {
-                await transaction.rollback();
                 res.send(error);
             }
         })
-    } catch (error) {
-        await transaction.rollback();
-        res.send(error);
     }
 });
 
