@@ -85,37 +85,31 @@ router.post('/api/mongodb/customers/login', async (req, res) => {
 
 router.patch('/api/mongodb/customers/unregister', async (req, res) => {
     try {
-        const session = await database.startSession();
-        session.startTransaction();
         const customer = await Customer.findOne({
                 email: req.body.email
         }).exec();
         //if retrieved password matches provided one, set password to null
-        bcrypt.compare(req.body.password, customer.password, async (error, match) => {
-            if (match) {
-                const count = await Customer.findByIdAndUpdate(
-                    customer._id
-                , {
-                    $unset: {password: ""}
-                })
-                await session.commitTransaction();
-                await session.endSession();
-                if (count[0] !== 0) {
-                    res.send("Customer unregistered");
+        if (customer && customer.password) {
+            bcrypt.compare(req.body.password, customer.password, async (error, match) => {
+                if (match) {
+                    const count = await Customer.findByIdAndUpdate(
+                        customer._id
+                    , {
+                        $unset: {password: ""}
+                    })
+                    if (count[0] !== 0) {
+                        res.send("Customer unregistered");
+                    } else {
+                        res.send("Customer with provided email and password not found");
+                    }
+                    return;
                 } else {
-                    res.send("Customer with provided email and password not found");
+                    res.send("Customer already unregistered");
                 }
-                return;
-            } else {
-                await session.abortTransaction();
-                await session.endSession();
-                res.send("Customer already unregistered");
-            }
-        })
+            })
+        }
 	} catch (error) {
-        await session.abortTransaction();
-        await session.endSession();
-		    res.send(error);
+        res.send(error);
 	}
 });
 
