@@ -11,6 +11,7 @@ const sequelize = new Sequelize(
     },
     host: process.env.HOST,
     dialect: 'mysql',
+    protocol: "mysql",
     define: {
       timestamps: false
     }
