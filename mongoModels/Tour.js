@@ -10,12 +10,14 @@ const tourSchema = new mongoose.Schema({
         type: mongoose.Decimal128,
         //set to 2 decimal values
         set: v => mongoose.Types.Decimal128.fromString(v.toFixed(2)),
+        get: v => new mongoose.Types.Decimal128((+v.toString()).toFixed(2)),
         required: true,
     },
     duration: {
         type: mongoose.Decimal128,
         //set to 1 decimal value
         set: v => mongoose.Types.Decimal128.fromString(v.toFixed(1)),
+        get: v => new mongoose.Types.Decimal128((+v.toString()).toFixed(1)),
         required: true,
     },
     number_of_spots: {
@@ -30,12 +32,14 @@ const tourSchema = new mongoose.Schema({
         type: mongoose.Decimal128,
         //set to 1 decimal value
         set: v => mongoose.Types.Decimal128.fromString(v.toFixed(1)),
+        get: v => new mongoose.Types.Decimal128((+v.toString()).toFixed(1)),
         required: true,
     },
     rating: {
         type: mongoose.Decimal128,
         //set to 2 decimal values
         set: v => mongoose.Types.Decimal128.fromString(v.toFixed(2)),
+        get: v => new mongoose.Types.Decimal128((+v.toString()).toFixed(2)),
         required: false,
     },
     description: {//nvarchar 510
@@ -63,6 +67,7 @@ const tourSchema = new mongoose.Schema({
             type: mongoose.Decimal128,
             //set to 1 decimal value
             set: v => mongoose.Types.Decimal128.fromString(v.toFixed(1)),
+            get: v => new mongoose.Types.Decimal128((+v.toString()).toFixed(1)),
             required: true,
         },
         comment: {
