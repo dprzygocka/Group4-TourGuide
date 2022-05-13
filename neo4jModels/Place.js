@@ -16,6 +16,7 @@ module.exports = {
         target: 'Tour',
         relationship: 'STARTS_IN',
         direction: 'in',
+        eager: false,
     },
     tourPlaceOfDestination: {
         required: false,
@@ -23,5 +24,6 @@ module.exports = {
         target: 'Tour',
         relationship: 'LEADS_TO',
         direction: 'in',
+        eager: false,
     },
 };

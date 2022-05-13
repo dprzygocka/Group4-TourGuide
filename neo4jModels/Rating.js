@@ -14,6 +14,11 @@ module.exports = {
         unique: 'false',
         required: 'true',
     },
+    type: {
+        type: 'string',
+        valid: ['GUIDE', 'TOUR'],
+        required: true,
+    },
     comment: {
         type: 'string',
         unique: 'false',
@@ -25,13 +30,13 @@ module.exports = {
         relationship: "REFERS_TO",
         direction: "out",
         target: "Schedule",
-        eager: true
+        eager: true,
     },
-    schedule: {
+    customer: {
         type: "relationship",
         relationship: "WRITES",
         direction: "in",
         target: "Customer",
-        eager: true
+        eager: true,
     }
 };

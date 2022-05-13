@@ -7,6 +7,7 @@ const instance = new Neode(process.env.NEO4J_URI, process.env.NEO4J_USERNAME, pr
     Rating: require('../neo4jModels/Rating'),
     Tour: require('../neo4jModels/Tour'),
     Schedule: require('../neo4jModels/Schedule'),
+    Customer: require('../neo4jModels/Customer'),
 });
 
 module.exports = { instance };

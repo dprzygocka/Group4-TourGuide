@@ -1,39 +1,53 @@
 const { instance } = require("../database/connection_neo4j");
 
 module.exports = {
-    scheduleId: {
+    customerId: {
         primary: true,
         type: 'uuid',
         required: true,
     },
-    numberOfFreeSpots: {
-        type: 'integer',
-        min: 0,
+    firstName: {
+        type: 'string',
+        unique: 'false',
+        required: 'true',
+        max: 60,
     },
-    scheduleDateTime: {
-        type: 'datetime',
-        required: true,
+    lastName: {
+        type: 'string',
+        unique: 'false',
+        required: 'true',
+        max: 60,
     },
-    tour: {
-        type: 'relationship',
-        target: 'Tour',
-        relationship: 'ASSIGNED_TO',
-        direction: 'in',
-        eager: true,
+    email: {
+        type: 'string',
+        unique: 'false',
+        required: 'true',
+        max: 127,
     },
-    guide: {
+    phone: {
+        type: 'string',
+        unique: 'false',
+        required: 'true',
+    },
+    password: {
+        type: 'string', //should be hash
+        unique: 'false',
+        required: 'true',
+        max: 100,
+    },
+    rating: {
         type: "relationship",
-        relationship: "GUIDES",
-        direction: "in",
-        target: "Guide",
-        eager: true,
+        relationship: "WRITES",
+        direction: "out",
+        target: "Rating",
+        eager: false,
     },
-    customerBooking: {
+    booking: {
         type: "relationship",
         relationship: "BOOKS",
-        direction: "in",
-        target: "Customer",
-        eager: false,
+        direction: "out",
+        target: "Schedule",
+        eager: true,
         properties: {
             bookingId: {
                 primary: true,

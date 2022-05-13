@@ -44,15 +44,15 @@ module.exports = {
         required: 'false',
     },
     contractEndDate: {
-        type: 'date', //datetime?
+        type: 'date',
         unique: 'false',
         required: 'true',
     },
-    guides: {
+    schedule: {
         type: "relationship",
         relationship: "GUIDES",
         direction: "out",
         target: "Schedule",
-        eager: true
+        eager: false,
     }
 };
