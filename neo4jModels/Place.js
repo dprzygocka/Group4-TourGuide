@@ -9,5 +9,19 @@ module.exports = {
     placeName: {
         type: 'string',
         unique: 'true',
-    }
+    },
+    tourPlaceOfDeparture: {
+        required: false,
+        type: 'relationship',
+        target: 'Tour',
+        relationship: 'STARTS_IN',
+        direction: 'in',
+    },
+    tourPlaceOfDestination: {
+        required: false,
+        type: 'relationship',
+        target: 'Tour',
+        relationship: 'LEADS_TO',
+        direction: 'in',
+    },
 };
