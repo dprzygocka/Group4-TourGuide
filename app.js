@@ -27,9 +27,6 @@ const ratingsRouter = require("./routes/ratings.js");
 const bookingsRouter = require("./routes/bookings.js");
 const mongoTransferRouter = require("./routes/mongoTransfer.js");
 
-const neo = require("./neo4jRoutes/places");
-app.use(neo.router);
-
 app.use(guidesRouter.router);
 app.use(customersRouter.router);
 app.use(placesRouter.router);
@@ -51,6 +48,15 @@ app.use(guidesMongoRouter.router);
 app.use(customersMongoRouter.router);
 app.use(toursMongoRouter.router);
 app.use(schedulesMongoRouter.router);
+
+//routers neo4j
+const placeGraphRouter = require("./neo4jRoutes/places");
+const tourGraphRouter = require("./neo4jRoutes/tours");
+const scheduleGraphRouter = require("./neo4jRoutes/schedules");
+
+app.use(placeGraphRouter.router);
+app.use(tourGraphRouter.router);
+app.use(scheduleGraphRouter.router);
 
 app.get('/', (req, res) => {
     res.sendFile(`${__dirname}/index.html`);
