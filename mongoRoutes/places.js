@@ -3,7 +3,7 @@ const Place = require('../mongoModels/Place.js');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 router.get('/api/mongodb/places', async (req, res) => {
-  const sortColumn = req.query.sortColumn || 'place_id';
+  const sortColumn = req.query.sortColumn || '_id';
   const direction = req.query.direction || 'ASC';
   const size = req.query.size || 10;
   //paging starts from 0
