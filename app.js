@@ -29,6 +29,8 @@ const mongoTransferRouter = require("./routes/mongoTransfer.js");
 
 const neo = require("./neo4jRoutes/places");
 app.use(neo.router);
+const neoGuide = require("./neo4jRoutes/guides");
+app.use(neoGuide.router);
 
 app.use(guidesRouter.router);
 app.use(customersRouter.router);
