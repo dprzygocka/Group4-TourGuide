@@ -4,7 +4,7 @@ const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 
 router.get('/api/neo4j/tours', async (req, res) => {
-    const sortColumn = req.query.sortColumn || 'placeId';
+    const sortColumn = req.query.sortColumn || 'tourId';
     const direction = req.query.direction || 'ASC';
     const size = Number(req.query.size) || 10;
     //paging starts from 0
