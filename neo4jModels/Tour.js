@@ -74,7 +74,7 @@ module.exports = {
         //automatically include in find all
         eager: true,
     },
-    schedule: {
+    assigned_to: {
         type: 'relationship',
         target: 'Schedule',
         relationship: 'ASSIGNED_TO',
