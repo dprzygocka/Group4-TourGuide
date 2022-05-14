@@ -26,7 +26,6 @@ router.get('/api/neo4j/tours', async (req, res) => {
 
 router.get('/api/neo4j/tours/:tour_id', async (req, res) => {
     instance.find('Tour', req.params.tour_id).then(res => {
-        console.log(res);
         return res.toJson();
     })
     .then(json => {
