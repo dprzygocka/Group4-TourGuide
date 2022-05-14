@@ -24,6 +24,17 @@ router.get('/api/neo4j/schedules', async (req, res) => {
     }
 });
 
+router.get('/api/neo4j/scheduless/:schedule_id', async (req, res) => {
+    instance.find('Schedule', req.params.schedule_id).then(res => {
+        return res.toJson();
+    })
+    .then(json => {
+        res.send(json);
+    })
+    .catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
 
 module.exports = {
     router,
