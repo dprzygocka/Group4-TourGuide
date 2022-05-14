@@ -70,6 +70,18 @@ router.post('/api/neo4j/tours', (req, res) => {
     });
 });
 
+router.delete('/api/neo4j/tours/:tour_id', async (req, res) => {
+    instance.find('Tour', req.params.tour_id).then(res => {
+        return res.delete();
+    })
+    .then(deleted => {
+        res.send(deleted._deleted);
+    })
+    .catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
+
 
 module.exports = {
     router,
