@@ -41,6 +41,17 @@ router.post('/api/neo4j/places', (req, res) => {
     });
 });
 
+router.delete('/api/neo4j/places/:place_id', (req, res) => {
+    instance.find('Place', req.params.place_id).then(res => {
+        return res.delete();
+    })
+    .then(deleted => {
+        res.send(deleted._deleted);
+    })
+    .catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
 
 module.exports = {
     router,
