@@ -58,7 +58,7 @@ module.exports = {
         valid: ['EASY', 'MEDIUM', 'HARD', 'EXTREME'],
         required: true,
     },
-    placeOfDeparture: {
+    starts_in: {
         type: 'relationship',
         target: 'Place',
         relationship: 'STARTS_IN',
@@ -66,7 +66,7 @@ module.exports = {
         //automatically include in find all
         eager: true,
     },
-    placeOfDestination: {
+    leads_to: {
         type: 'relationship',
         target: 'Place',
         relationship: 'LEADS_TO',
