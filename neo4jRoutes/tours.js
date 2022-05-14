@@ -39,6 +39,38 @@ router.get('/api/neo4j/tours/:tour_id', async (req, res) => {
 
 //get fulltext index
 
+router.post('/api/neo4j/tours', (req, res) => {
+    Promise.all([
+        instance.create('Tour', {
+            tourId: uuidv4(),
+            difficulty: req.body.difficulty,
+            price: req.body.price,
+            duration: req.body.duration,
+            numberOfSpots: req.body.numberOfSpots,
+            ageLimit: req.body.ageLimit,
+            distance: req.body.distance,
+            description: req.body.description,
+            isActive: req.body.isActive
+        }),
+        instance.first('Place', 'placeName', req.body.placeOfDeparture),
+        instance.first('Place', 'placeName', req.body.placeOfDestination),
+    ]).then(([tour, placeOfDeparture, placeOfDestination]) => {
+        Promise.all([
+            tour.relateTo(placeOfDeparture, 'starts_in'),
+            tour.relateTo(placeOfDestination, 'leads_to')
+        ])
+        return tour;
+    }).then((tour) => {
+        return tour.toJson();
+    }).then(json => {
+        res.send(json);
+    })
+    .catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
+
+
 module.exports = {
     router,
 };
