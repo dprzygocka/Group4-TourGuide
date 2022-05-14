@@ -62,6 +62,17 @@ router.post('/api/neo4j/schedules', async (req, res) => {
     });
 });
 
+router.delete('/api/neo4j/schedules/:schedule_id', async (req, res) => {
+    instance.find('Schedule', req.params.schedule_id).then(res => {
+        return res.delete();
+    })
+    .then(deleted => {
+        res.send(deleted._deleted);
+    })
+    .catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
 
 module.exports = {
     router,
