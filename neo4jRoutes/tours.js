@@ -103,6 +103,29 @@ router.put('/api/neo4j/tours/:tour_id', async (req, res) => {
     });
 });
 
+router.patch('/api/neo4j/tours/:tour_id', async (req, res) => {
+    const fieldName = req.body.fieldName;
+    const fieldValue = req.body.fieldValue;
+    //we can restrict fields to update here
+    if (!fieldName || fieldName === 'tourId' || !fieldValue ) {
+        res.send({
+            message: 'Nothing to update',
+        });
+        return;
+    }
+    //dynamically assign value to update
+    const updateData = {};
+    updateData[fieldName] = fieldValue;
+    instance.find('Tour', req.params.tour_id).then(tour => {
+        tour.update(updateData).then((tour) => {
+            return tour.toJson();
+        }).then(json => {
+            res.send(json);
+        })
+    }).catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
 
 module.exports = {
     router,
