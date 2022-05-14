@@ -26,6 +26,20 @@ router.get('/api/neo4j/places/:place_id', (req, res) => {
     });
 });
 
+router.post('/api/neo4j/places', (req, res) => {
+    instance.create('Place', {
+        placeId: uuidv4(),
+        placeName: req.body.placeName 
+    }).then(res => {
+        return res.toJson();
+    })
+    .then(json => {
+        res.send(json);
+    })
+    .catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
 
 
 module.exports = {
