@@ -82,6 +82,27 @@ router.delete('/api/neo4j/tours/:tour_id', async (req, res) => {
     });
 });
 
+router.put('/api/neo4j/tours/:tour_id', async (req, res) => {
+    instance.find('Tour', req.params.tour_id).then(tour => {
+        tour.update({
+            difficulty: req.body.difficulty,
+            price: req.body.price,
+            duration: req.body.duration,
+            numberOfSpots: req.body.numberOfSpots,
+            ageLimit: req.body.ageLimit,
+            distance: req.body.distance,
+            description: req.body.description,
+            isActive: req.body.isActive
+        }).then((tour) => {
+            return tour.toJson();
+        }).then(json => {
+            res.send(json);
+        })
+    }).catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
+
 
 module.exports = {
     router,
