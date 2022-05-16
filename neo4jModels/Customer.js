@@ -35,7 +35,7 @@ module.exports = {
         required: 'true',
         max: 100,
     },
-    rating: {
+    writes: {
         type: "relationship",
         relationship: "WRITES",
         direction: "out",
