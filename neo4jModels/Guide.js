@@ -48,7 +48,7 @@ module.exports = {
         unique: 'false',
         required: 'true',
     },
-    schedule: {
+    guides: {
         type: "relationship",
         relationship: "GUIDES",
         direction: "out",

@@ -28,7 +28,7 @@ module.exports = {
         target: "Rating",
         eager: true,
     },
-    guide: {
+    guides: {
         type: "relationship",
         relationship: "GUIDES",
         direction: "in",
