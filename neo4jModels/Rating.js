@@ -25,14 +25,14 @@ module.exports = {
         required: 'false',
         max: 510,
     },
-    schedule: {
+    refers_to: {
         type: "relationship",
         relationship: "REFERS_TO",
         direction: "out",
         target: "Schedule",
         eager: true,
     },
-    customer: {
+    writes: {
         type: "relationship",
         relationship: "WRITES",
         direction: "in",
