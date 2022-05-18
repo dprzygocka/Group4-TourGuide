@@ -16,7 +16,8 @@
     "mysql2": "^2.3.3",
     "neode": "^0.4.8",
     "package.json": "^2.0.1",
-    "sequelize": "^6.18.0"
+    "sequelize": "^6.18.0",
+    "uuid": "^8.3.2"
   },
   "repository": {
     "type": "git",

@@ -10,7 +10,7 @@ module.exports = {
         type: 'string',
         unique: 'true',
     },
-    tourPlaceOfDeparture: {
+    starts_in: {
         required: false,
         type: 'relationship',
         target: 'Tour',
@@ -18,7 +18,7 @@ module.exports = {
         direction: 'in',
         eager: false,
     },
-    tourPlaceOfDestination: {
+    leads_to: {
         required: false,
         type: 'relationship',
         target: 'Tour',

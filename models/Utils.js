@@ -1,5 +1,5 @@
 function checkSortColumn(column) {
-    return column.match(/^[a-z_]+$/);
+    return column.match(/^[a-zA-Z_]+$/);
 }
 
 function checkDirection(direction){
