@@ -35,7 +35,7 @@ module.exports = {
         target: "Guide",
         eager: true,
     },
-    customerBooking: {
+    books: {
         type: "relationship",
         relationship: "BOOKS",
         direction: "in",

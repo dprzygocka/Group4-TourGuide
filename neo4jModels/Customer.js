@@ -42,7 +42,7 @@ module.exports = {
         target: "Rating",
         eager: false,
     },
-    booking: {
+    books: {
         type: "relationship",
         relationship: "BOOKS",
         direction: "out",
