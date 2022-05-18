@@ -9,12 +9,13 @@ module.exports = {
     numberOfFreeSpots: {
         type: 'integer',
         min: 0,
+        required: false
     },
     scheduleDateTime: {
         type: 'datetime',
         required: true,
     },
-    tour: {
+    assigned_to: {
         type: 'relationship',
         target: 'Tour',
         relationship: 'ASSIGNED_TO',
