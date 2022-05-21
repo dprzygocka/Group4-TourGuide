@@ -3,7 +3,10 @@ const router = require('express').Router();
 const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
 const { schedule } = require('../neo4jModels/Tour');
-//transaction and hashing
+const bcrypt = require("bcrypt");
+const saltRounds = 15;
+
+//transaction
 router.get('/api/neo4j/customers', async (req, res) => {
     const sortColumn = req.query.sortColumn || 'customerId';
     const direction = req.query.direction || 'ASC';
@@ -38,22 +41,30 @@ router.get('/api/neo4j/customers/:customer_id', (req, res) => {
 });
 
 router.post('/api/neo4j/customers/register', (req, res) => {
-    instance.create('Customer', {
-        customerId: uuidv4(),
-        firstName: req.body.firstName, 
-        lastName: req.body.lastName,
-        email: req.body.email,
-        phone: req.body.phone,
-        password: req.body.password
-    })
-    .then(res => {
-        return res.toJson();
-    })
-    .then(json => {
-        res.send(json);
-    })
-    .catch(e => {
-        res.status(500).send(e.stack);
+    bcrypt.hash(req.body.password, saltRounds, async (error, hash) => {
+        if (!error) {
+            instance.create('Customer', {
+                customerId: uuidv4(),
+                firstName: req.body.firstName, 
+                lastName: req.body.lastName,
+                email: req.body.email,
+                phone: req.body.phone,
+                password: hash
+            })
+            .then(res => {
+                return res.toJson();
+            })
+            .then(json => {
+                res.send(json);
+            })
+            .catch(e => {
+                res.status(500).send(e.stack);
+            });   
+        } else {
+            res.status(500).send({
+                message: "Something went wrong. Try again."
+            });
+        }
     });
 });
 
@@ -80,6 +91,7 @@ router.post('/api/neo4j/customers/login', (req, res) => {
 
 router.post('/api/neo4j/customers/booking', (req, res) => {
     let updatedNumberOfspots;
+    let tour;
     instance.first('Schedule', 'scheduleId', req.body.scheduleId)
     .then( schedule => {
         return schedule.toJson();
@@ -94,6 +106,8 @@ router.post('/api/neo4j/customers/booking', (req, res) => {
             throw new Error('Not enough free spots.');
         }
         updatedNumberOfspots = jsonSchedule.numberOfFreeSpots - req.body.numberOfSpots;
+        tourPrice = jsonSchedule.assigned_to.node.price;
+        console.log(tourPrice);
 
         Promise.all([
             instance.first('Customer', 'customerId', req.body.customerId),
@@ -102,7 +116,7 @@ router.post('/api/neo4j/customers/booking', (req, res) => {
         .then(([customer, schedule]) => {
             customer.relateTo(schedule, 'books', {
                 bookingId: uuidv4(),
-                totalPrice: req.body.totalPrice,
+                totalPrice: req.body.totalPrice * req.body.numberOfSpots,
                 bookingDateTime: req.body.bookingDateTime,
                 numberOfSpots: req.body.numberOfSpots     
             });
