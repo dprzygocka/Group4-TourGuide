@@ -91,7 +91,7 @@ router.post('/api/neo4j/customers/login', (req, res) => {
 
 router.post('/api/neo4j/customers/booking', (req, res) => {
     let updatedNumberOfspots;
-    let tour;
+    let tourPrice;
     instance.first('Schedule', 'scheduleId', req.body.scheduleId)
     .then( schedule => {
         return schedule.toJson();
@@ -107,7 +107,6 @@ router.post('/api/neo4j/customers/booking', (req, res) => {
         }
         updatedNumberOfspots = jsonSchedule.numberOfFreeSpots - req.body.numberOfSpots;
         tourPrice = jsonSchedule.assigned_to.node.price;
-        console.log(tourPrice);
 
         Promise.all([
             instance.first('Customer', 'customerId', req.body.customerId),
@@ -116,7 +115,7 @@ router.post('/api/neo4j/customers/booking', (req, res) => {
         .then(([customer, schedule]) => {
             customer.relateTo(schedule, 'books', {
                 bookingId: uuidv4(),
-                totalPrice: req.body.totalPrice * req.body.numberOfSpots,
+                totalPrice: tourPrice * req.body.numberOfSpots,
                 bookingDateTime: req.body.bookingDateTime,
                 numberOfSpots: req.body.numberOfSpots     
             });
