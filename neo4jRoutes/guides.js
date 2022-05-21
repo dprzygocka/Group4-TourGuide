@@ -37,8 +37,7 @@ router.get('/api/neo4j/guides/:guide_id', (req, res) => {
 });
 
 router.post('/api/neo4j/guides', (req, res) => {
-    Promise.all([
-        instance.create('Guide', {
+    instance.create('Guide', {
             guideId: uuidv4(),
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -47,14 +46,8 @@ router.post('/api/neo4j/guides', (req, res) => {
             phone: req.body.phone,
             rating: req.body.rating,
             contractEndDate: req.body.contractEndDate,
-        }),
-        instance.first('Schedule', 'scheduleId', req.body.scheduleId),
-    ]).then(([guide, schedule]) => {
-        Promise.all([
-            guide.relateTo(schedule, 'guides'),
-        ])
-        return guide;
-    }).then((guide) => {
+    })
+    .then((guide) => {
         return guide.toJson();
     }).then(json => {
         res.send(json);

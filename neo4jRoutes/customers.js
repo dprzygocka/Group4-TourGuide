@@ -1,4 +1,4 @@
-const {instance} = require('../database/connection_neo4j');
+const {instance, driver} = require('../database/connection_neo4j');
 const router = require('express').Router();
 const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
@@ -89,14 +89,16 @@ router.post('/api/neo4j/customers/login', (req, res) => {
     });
 });
 
-router.post('/api/neo4j/customers/booking', (req, res) => {
+router.post('/api/neo4j/customers/booking', async (req, res) => {
     let updatedNumberOfspots;
     let tourPrice;
+    const session = driver.session();
+    txc = await session.beginTransaction();
     instance.first('Schedule', 'scheduleId', req.body.scheduleId)
     .then( schedule => {
         return schedule.toJson();
     })
-    .then( jsonSchedule => { //try catch?
+    .then( jsonSchedule => {
         if (jsonSchedule && new Date(jsonSchedule.scheduleDateTime) <= new Date(req.body.bookingDateTime)) {
             throw new Error('You cannot book schedules from the past.');
         } else if (!jsonSchedule) {
@@ -126,11 +128,15 @@ router.post('/api/neo4j/customers/booking', (req, res) => {
             return customer.toJson();
         })
         .then(json => {
+            txc.commit();
             res.send(json);
         })
     })
     .catch(e => {
+        txc.rollback();
+        session.close();
         res.status(500).send(e.stack);
+        return;
     });
 });
 
