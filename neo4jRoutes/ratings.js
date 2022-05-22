@@ -48,6 +48,27 @@ router.post('/api/neo4j/ratings', async (req, res) => {
 
         const schedule = await instance.first('Schedule', 'scheduleId', req.body.scheduleId);
         const jsonSchedule = await schedule.toJson();
+
+        const relationashipType = req.body.type === 'TOUR' ? 'ASSIGNED_TO' : 'guides';
+
+        const tourOrGuideId = await session.run(`
+        MATCH (s:Schedule {scheduleId: '${req.body.scheduleId}'})
+        -[:${relationashipType}]-(${req.body.type.toLowerCase()})
+        RETURN ${req.body.type.toLowerCase()}.tourId AS id;
+        `)
+        const result = tourOrGuideId.records[0].get('id');
+
+        const allRatings = await session.run(`
+            MATCH (r:Rating {type: '${req.body.type}'})-[:REFERS_TO]-(schedule)
+            -[:${relationashipType}]-(${req.body.type.toLowerCase()} { ${req.body.type.toLowerCase()}Id: '${result}'})
+            RETURN r.rating AS rating;
+        `)
+        const ratingsCount = allRatings.records.length;
+        const ratingsValue = allRatings.records.map( (rating) => rating.get('rating')).reduce((previous, next) => previous + next);
+
+        const ratingType = req.body.type === 'TOUR' ? 'Tour' : 'Guide';
+        const updateRating = await instance.first(`${ratingType}`,`${ratingType.toLowerCase()}Id`, `${result}`);
+
         const customer = await instance.first('Customer', 'customerId', req.body.customerId);
 
         if (rating && schedule && new Date(jsonSchedule.scheduleDateTime) >= new Date()) {
@@ -58,6 +79,8 @@ router.post('/api/neo4j/ratings', async (req, res) => {
 
         await rating.relateTo(schedule, 'refers_to', {});
         await rating.relateTo(customer, 'writes', {});
+
+        await updateRating.update({"rating": (ratingsValue/ratingsCount).toFixed(2) });
 
         await session.commit();
         res.send("Rating created!");
