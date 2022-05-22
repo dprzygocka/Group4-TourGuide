@@ -92,13 +92,14 @@ router.post('/api/neo4j/customers/login', (req, res) => {
 router.post('/api/neo4j/customers/booking', async (req, res) => {
     let updatedNumberOfspots;
     let tourPrice;
-    const session = driver.session();
-    txc = await session.beginTransaction();
-    instance.first('Schedule', 'scheduleId', req.body.scheduleId)
-    .then( schedule => {
-        return schedule.toJson();
-    })
-    .then( jsonSchedule => {
+    const session = driver.session().beginTransaction();
+    try {
+        updatedNumberOfspots = jsonSchedule.numberOfFreeSpots - req.body.numberOfSpots;
+        tourPrice = jsonSchedule.assigned_to.node.price;
+
+        let schedule = await instance.first('Schedule', 'scheduleId', req.body.scheduleId);
+        let jsonSchedule = await schedule.toJson();
+
         if (jsonSchedule && new Date(jsonSchedule.scheduleDateTime) <= new Date(req.body.bookingDateTime)) {
             throw new Error('You cannot book schedules from the past.');
         } else if (!jsonSchedule) {
@@ -110,34 +111,28 @@ router.post('/api/neo4j/customers/booking', async (req, res) => {
         updatedNumberOfspots = jsonSchedule.numberOfFreeSpots - req.body.numberOfSpots;
         tourPrice = jsonSchedule.assigned_to.node.price;
 
-        Promise.all([
-            instance.first('Customer', 'customerId', req.body.customerId),
-            instance.first('Schedule', 'scheduleId', req.body.scheduleId)
-        ])
-        .then(([customer, schedule]) => {
-            customer.relateTo(schedule, 'books', {
+    
+        let customer = await instance.first('Customer', 'customerId', req.body.customerId);
+        schedule = await instance.first('Schedule', 'scheduleId', req.body.scheduleId); //do i need it
+
+        await customer.relateTo(schedule, 'books', {
                 bookingId: uuidv4(),
                 totalPrice: tourPrice * req.body.numberOfSpots,
                 bookingDateTime: req.body.bookingDateTime,
                 numberOfSpots: req.body.numberOfSpots     
-            });
-            return [customer,schedule];
-        })
-        .then(([customer,schedule]) => {
-            schedule.update({"numberOfFreeSpots": updatedNumberOfspots });
-            return customer.toJson();
-        })
-        .then(json => {
-            txc.commit();
-            res.send(json);
-        })
-    })
-    .catch(e => {
-        txc.rollback();
-        session.close();
-        res.status(500).send(e.stack);
-        return;
-    });
+        });
+
+        await schedule.update({"numberOfFreeSpots": updatedNumberOfspots });
+
+        await session.commit();
+        res.send("Booking created!");
+    
+    } catch (e) {
+        await session.rollback();
+        res.status(500).send(e.stack); 
+    } finally {
+        await session.close();
+    }
 });
 
 router.patch('/api/neo4j/customers/unregister/:customer_id', async (req, res) => {
