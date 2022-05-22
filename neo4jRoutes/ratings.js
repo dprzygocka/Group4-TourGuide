@@ -1,4 +1,4 @@
-const {instance} = require('../database/connection_neo4j');
+const {instance, driver} = require('../database/connection_neo4j');
 const router = require('express').Router();
 const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
@@ -36,30 +36,37 @@ router.get('/api/neo4j/ratings/:rating_id', (req, res) => {
     });
 });
 
-router.post('/api/neo4j/ratings', (req, res) => {
-    Promise.all([
-        instance.create('Rating', {
+router.post('/api/neo4j/ratings', async (req, res) => {
+    const session = driver.session().beginTransaction();
+    try {
+        const rating = await instance.create('Rating', {
             ratingId: uuidv4(),
             rating: req.body.rating, 
             type: req.body.type,
             comment: req.body.comment,
-        }),
-        instance.first('Schedule', 'scheduleId', req.body.scheduleId),
-        instance.first('Customer', 'customerId', req.body.customerId),
-    ]).then(([rating, schedule, customer]) => {
-        Promise.all([
-            rating.relateTo(schedule, 'refers_to'),
-            rating.relateTo(customer, 'writes')
-        ])
-        return rating;
-    }).then((rating) => {
-        return rating.toJson();
-    }).then(json => {
-        res.send(json);
-    })
-    .catch(e => {
-        res.status(500).send(e.stack);
-    });
+        });
+
+        const schedule = await instance.first('Schedule', 'scheduleId', req.body.scheduleId);
+        const jsonSchedule = await schedule.toJson();
+        const customer = await instance.first('Customer', 'customerId', req.body.customerId);
+
+        if (rating && schedule && new Date(jsonSchedule.scheduleDateTime) >= new Date()) {
+            throw new Error('You cannot rate schedules from the future.');
+        } else if (!rating) {
+            throw new Error('Rating not created.');
+        }
+
+        await rating.relateTo(schedule, 'refers_to', {});
+        await rating.relateTo(customer, 'writes', {});
+
+        await session.commit();
+        res.send("Rating created!");
+    } catch (e) {
+        await session.rollback();
+        res.status(500).send(e.stack); 
+    } finally {
+        await session.close();
+    }
 });
 
 router.delete('/api/neo4j/ratings/:rating_id', (req, res) => {

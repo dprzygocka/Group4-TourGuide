@@ -94,9 +94,6 @@ router.post('/api/neo4j/customers/booking', async (req, res) => {
     let tourPrice;
     const session = driver.session().beginTransaction();
     try {
-        updatedNumberOfspots = jsonSchedule.numberOfFreeSpots - req.body.numberOfSpots;
-        tourPrice = jsonSchedule.assigned_to.node.price;
-
         let schedule = await instance.first('Schedule', 'scheduleId', req.body.scheduleId);
         let jsonSchedule = await schedule.toJson();
 
