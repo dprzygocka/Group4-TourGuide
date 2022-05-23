@@ -1,6 +1,7 @@
 const Neode = require('neode');
+var neo4j = require('neo4j-driver');
 require('dotenv').config();
-const router = require('express').Router();
+
 const instance = new Neode(process.env.NEO4J_URI, process.env.NEO4J_USERNAME, process.env.NEO4J_PASSWORD, true).with({
     Place: require('../neo4jModels/Place'),
     Guide: require('../neo4jModels/Guide'),
@@ -10,4 +11,7 @@ const instance = new Neode(process.env.NEO4J_URI, process.env.NEO4J_USERNAME, pr
     Customer: require('../neo4jModels/Customer'),
 });
 
-module.exports = { instance };
+
+const driver = neo4j.driver(process.env.NEO4J_URI, neo4j.auth.basic(process.env.NEO4J_USERNAME, process.env.NEO4J_PASSWORD));
+
+module.exports = { instance, driver };

@@ -43,20 +43,21 @@ router.post('/api/neo4j/schedules', async (req, res) => {
             scheduleDateTime: req.body.dateTime,
         }),
         instance.first('Tour', 'tourId', req.body.tourId),
-        instance.first('Guide', 'guideId', parseInt(req.body.guideId)),
+        instance.first('Guide', 'guideId', req.body.guideId),
     ]).then(async([schedule, tour, guide]) => {
         Promise.all([
             schedule.relateTo(tour, 'assigned_to'),
             schedule.relateTo(guide, 'guides'),
             schedule.update({'numberOfFreeSpots': tour.get('numberOfSpots')})
-        ])
-        return schedule;
-    }).then((schedule) => {
-        return schedule.toJson();
-    }).then(json => {
-        res.send(json);
-    })
-    .catch(e => {
+        ]).then(([tourRelationship, guideRelationship, schedule]) => {
+            return schedule.toJson();
+        }).then(json => {
+            res.send(json);
+        }).catch(e => {
+            console.log(e);
+            res.status(500).send(e.stack);
+        });
+    }).catch(e => {
         console.log(e);
         res.status(500).send(e.stack);
     });

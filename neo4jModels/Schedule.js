@@ -22,6 +22,13 @@ module.exports = {
         direction: 'in',
         eager: true,
     },
+    refers_to: {
+        type: "relationship",
+        relationship: "REFERS_TO",
+        direction: "in",
+        target: "Rating",
+        eager: true,
+    },
     guides: {
         type: "relationship",
         relationship: "GUIDES",
@@ -29,7 +36,7 @@ module.exports = {
         target: "Guide",
         eager: true,
     },
-    customerBooking: {
+    books: {
         type: "relationship",
         relationship: "BOOKS",
         direction: "in",

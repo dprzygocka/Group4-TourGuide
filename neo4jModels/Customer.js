@@ -35,14 +35,14 @@ module.exports = {
         required: 'true',
         max: 100,
     },
-    rating: {
+    writes: {
         type: "relationship",
         relationship: "WRITES",
         direction: "out",
         target: "Rating",
         eager: false,
     },
-    booking: {
+    books: {
         type: "relationship",
         relationship: "BOOKS",
         direction: "out",
