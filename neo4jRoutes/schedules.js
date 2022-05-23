@@ -1,4 +1,4 @@
-const {instance} = require('../database/connection_neo4j');
+const {instance, driver} = require('../database/connection_neo4j');
 const router = require('express').Router();
 const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
@@ -37,30 +37,24 @@ router.get('/api/neo4j/scheduless/:schedule_id', async (req, res) => {
 });
 
 router.post('/api/neo4j/schedules', async (req, res) => {
-    Promise.all([
-        instance.create('Schedule', {
-            scheduleId: uuidv4(),
-            scheduleDateTime: req.body.dateTime,
-        }),
-        instance.first('Tour', 'tourId', req.body.tourId),
-        instance.first('Guide', 'guideId', req.body.guideId),
-    ]).then(async([schedule, tour, guide]) => {
-        Promise.all([
-            schedule.relateTo(tour, 'assigned_to'),
-            schedule.relateTo(guide, 'guides'),
-            schedule.update({'numberOfFreeSpots': tour.get('numberOfSpots')})
-        ]).then(([tourRelationship, guideRelationship, schedule]) => {
-            return schedule.toJson();
-        }).then(json => {
-            res.send(json);
-        }).catch(e => {
-            console.log(e);
-            res.status(500).send(e.stack);
-        });
-    }).catch(e => {
-        console.log(e);
-        res.status(500).send(e.stack);
-    });
+    const session = driver.session().beginTransaction();
+    try {
+        const schedule = await instance.create('Schedule', {
+                scheduleId: uuidv4(),
+                scheduleDateTime: req.body.dateTime,
+            });
+        const tour = await instance.first('Tour', 'tourId', req.body.tourId);
+        const guide = await instance.first('Guide', 'guideId', req.body.guideId);
+        await schedule.relateTo(tour, 'assigned_to'),
+        await schedule.relateTo(guide, 'guides'),
+        await schedule.update({'numberOfFreeSpots': tour.get('numberOfSpots')})
+        res.send(await schedule.toJson());
+    } catch (e) {
+        await session.rollback();
+        res.status(500).send(e.stack); 
+    } finally {
+        await session.close();
+    }
 });
 
 router.delete('/api/neo4j/schedules/:schedule_id', async (req, res) => {
