@@ -1,4 +1,4 @@
-const {instance} = require('../database/connection_neo4j');
+const {instance, driver} = require('../database/connection_neo4j');
 const router = require('express').Router();
 const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
@@ -38,35 +38,31 @@ router.get('/api/neo4j/tours/:tour_id', async (req, res) => {
 
 //get fulltext index
 
-router.post('/api/neo4j/tours', (req, res) => {
-    Promise.all([
-        instance.create('Tour', {
-            tourId: uuidv4(),
-            difficulty: req.body.difficulty,
-            price: req.body.price,
-            duration: req.body.duration,
-            numberOfSpots: req.body.numberOfSpots,
-            ageLimit: req.body.ageLimit,
-            distance: req.body.distance,
-            description: req.body.description,
-            isActive: req.body.isActive
-        }),
-        instance.first('Place', 'placeName', req.body.placeOfDeparture),
-        instance.first('Place', 'placeName', req.body.placeOfDestination),
-    ]).then(([tour, placeOfDeparture, placeOfDestination]) => {
-        Promise.all([
-            tour.relateTo(placeOfDeparture, 'starts_in'),
-            tour.relateTo(placeOfDestination, 'leads_to')
-        ])
-        return tour;
-    }).then((tour) => {
-        return tour.toJson();
-    }).then(json => {
-        res.send(json);
-    })
-    .catch(e => {
-        res.status(500).send(e.stack);
-    });
+router.post('/api/neo4j/tours', async (req, res) => {
+    const session = driver.session().beginTransaction();
+    try {
+        const tour = await instance.create('Tour', {
+                tourId: uuidv4(),
+                difficulty: req.body.difficulty,
+                price: req.body.price,
+                duration: req.body.duration,
+                numberOfSpots: req.body.numberOfSpots,
+                ageLimit: req.body.ageLimit,
+                distance: req.body.distance,
+                description: req.body.description,
+                isActive: req.body.isActive
+            });
+        const placeOfDeparture = await instance.first('Place', 'placeName', req.body.placeOfDeparture);
+        const placeOfDestination = await instance.first('Place', 'placeName', req.body.placeOfDestination);
+        await tour.relateTo(placeOfDeparture, 'starts_in');
+        await tour.relateTo(placeOfDestination, 'leads_to');
+        res.send(await tour.toJson());
+    } catch (e) {
+        await session.rollback();
+        res.status(500).send(e.stack); 
+    } finally {
+        await session.close();
+    }
 });
 
 router.delete('/api/neo4j/tours/:tour_id', async (req, res) => {
