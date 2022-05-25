@@ -37,6 +37,15 @@ router.get('/api/neo4j/tours/:tour_id', async (req, res) => {
 });
 
 //get fulltext index
+router.get('/api/neo4j/tours/description/:search_keys', async(req, res) => {
+    instance.cypher(`CALL db.index.fulltext.queryNodes("Description", "${req.params.search_keys}") YIELD node RETURN node`)
+    .then(json => {
+        res.send(json);
+    })
+    .catch(e => {
+        res.status(500).send(e.stack);
+    });
+});
 
 router.post('/api/neo4j/tours', async (req, res) => {
     const session = driver.session().beginTransaction();

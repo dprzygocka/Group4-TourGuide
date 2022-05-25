@@ -39,7 +39,6 @@ router.get('/api/mongodb/tours/:tour_id', async (req, res) => {
 //stop words
 //https://github.com/mongodb/mongo/blob/master/src/mongo/db/fts/stop_words_english.txt
 router.get('/api/mongodb/tours/description/:search_keys', async(req, res) => {
-    console.log(req.params.search_keys);
     try {
         const tours = await Tour.find({$text: {$search: req.params.search_keys}}).exec();
         res.send(tours);
