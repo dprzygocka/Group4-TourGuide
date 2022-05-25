@@ -2,6 +2,7 @@ const {instance, driver} = require('../database/connection_neo4j');
 const router = require('express').Router();
 const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
+const { numberOfSpots } = require('../neo4jModels/Tour');
 
 router.get('/api/neo4j/schedules', async (req, res) => {
     const sortColumn = req.query.sortColumn || 'scheduleId';
@@ -39,16 +40,22 @@ router.get('/api/neo4j/scheduless/:schedule_id', async (req, res) => {
 router.post('/api/neo4j/schedules', async (req, res) => {
     const session = driver.session().beginTransaction();
     try {
-        const schedule = await instance.create('Schedule', {
-                scheduleId: uuidv4(),
+        const scheduleId = uuidv4();
+        const numberOfSpots = await session.run(`MATCH (t:Tour) WHERE t.tourId = $tourId RETURN t.numberOfSpots`, {tourId: req.body.tourId})
+        const schedule = await session.run(`CREATE (s:Schedule {scheduleId: $scheduleId, scheduleDateTime: $scheduleDateTime, numberOfFreeSpots: $numberOfFreeSpots})`, {
+                scheduleId: scheduleId,
                 scheduleDateTime: req.body.dateTime,
+                numberOfFreeSpots: numberOfSpots.records[0]._fields[0].low,
             });
-        const tour = await instance.first('Tour', 'tourId', req.body.tourId);
-        const guide = await instance.first('Guide', 'guideId', req.body.guideId);
-        await schedule.relateTo(tour, 'assigned_to'),
-        await schedule.relateTo(guide, 'guides'),
-        await schedule.update({'numberOfFreeSpots': tour.get('numberOfSpots')})
-        res.send(await schedule.toJson());
+        await session.run(`MATCH (g:Guide), (s:Schedule) WHERE g.guideId = $guideId AND s.scheduleId = $scheduleId
+            CREATE (g)-[r:GUIDES]->(s)
+            RETURN type(r)`, {guideId: req.body.guideId, scheduleId: scheduleId});
+        await session.run(`MATCH (t:Tour), (s:Schedule) WHERE t.tourId = $tourId AND s.scheduleId = $scheduleId
+            CREATE (t)-[r:ASSIGNED_TO]->(s)
+            RETURN type(r)`, {tourId: req.body.tourId, scheduleId: scheduleId});
+        
+        session.commit();
+        res.send(schedule.summary.counters._stats.nodesCreated > 0 ? 'created' : 'not created');
     } catch (e) {
         await session.rollback();
         res.status(500).send(e.stack); 
