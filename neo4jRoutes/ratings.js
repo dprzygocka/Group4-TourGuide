@@ -39,12 +39,7 @@ router.get('/api/neo4j/ratings/:rating_id', (req, res) => {
 router.post('/api/neo4j/ratings', async (req, res) => {
     const session = driver.session().beginTransaction();
     try {
-        const rating = await instance.create('Rating', {
-            ratingId: uuidv4(),
-            rating: req.body.rating, 
-            type: req.body.type,
-            comment: req.body.comment,
-        });
+        const rating = await session.run(`CREATE (r:Rating {ratingId: "${uuidv4()}", rating: ${req.body.rating},type: "${req.body.type}", comment: "${req.body.comment}"}) RETURN r.ratingId AS ratingId`);
 
         const schedule = await instance.first('Schedule', 'scheduleId', req.body.scheduleId);
         const jsonSchedule = await schedule.toJson();
@@ -65,22 +60,21 @@ router.post('/api/neo4j/ratings', async (req, res) => {
         `)
         const ratingsCount = allRatings.records.length;
         const ratingsValue = allRatings.records.map( (rating) => rating.get('rating')).reduce((previous, next) => previous + next);
-
-        const ratingType = req.body.type === 'TOUR' ? 'Tour' : 'Guide';
-        const updateRating = await instance.first(`${ratingType}`,`${ratingType.toLowerCase()}Id`, `${result}`);
-
-        const customer = await instance.first('Customer', 'customerId', req.body.customerId);
-
+/*
         if (rating && schedule && new Date(jsonSchedule.scheduleDateTime) >= new Date()) {
             throw new Error('You cannot rate schedules from the future.');
         } else if (!rating) {
             throw new Error('Rating not created.');
-        }
+        } */
+        await session.run(`MATCH (r:Rating), (s:Schedule) WHERE r.ratingId = "${rating.records[0].get('ratingId')}" AND s.scheduleId = "${req.body.scheduleId}" CREATE (r)-[z:REFERS_TO]->(s) RETURN type(z)`);
 
-        await rating.relateTo(schedule, 'refers_to', {});
-        await rating.relateTo(customer, 'writes', {});
+        await session.run(`MATCH (r:Rating), (c:Customer) 
+        WHERE r.ratingId = "${rating.records[0].get('ratingId')}" AND c.customerId = "${req.body.customerId}"
+        CREATE (c)-[z:WRITES]->(r)
+        RETURN type(z)`);
 
-        await updateRating.update({"rating": (ratingsValue/ratingsCount).toFixed(2) });
+        const ratingType = req.body.type === 'TOUR' ? 'Tour' : 'Guide';
+        await session.run(`MATCH (r:${ratingType}) WHERE r.${ratingType.toLowerCase()}Id = "${result}" SET r.rating = ${(ratingsValue/ratingsCount).toFixed(2)}`);
 
         await session.commit();
         res.send("Rating created!");
