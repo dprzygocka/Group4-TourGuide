@@ -1,4 +1,4 @@
-const {instance} = require('../database/connection_neo4j');
+const {instance, driver} = require('../database/connection_neo4j');
 const router = require('express').Router();
 const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
@@ -51,16 +51,29 @@ router.post('/api/neo4j/places', (req, res) => {
     });
 });
 
-router.delete('/api/neo4j/places/:place_id', (req, res) => {
-    instance.find('Place', req.params.place_id).then(res => {
-        return res.delete();
-    })
-    .then(deleted => {
-        res.send(deleted._deleted);
-    })
-    .catch(e => {
-        res.status(500).send(e.stack);
-    });
+router.delete('/api/neo4j/places/:place_id', async (req, res) => {
+    const session = driver.session().beginTransaction();
+    try {
+        await session.run(`MATCH (tour:Tour)-[:STARTS_IN]->(place:Place)
+            WHERE place.placeId = $placeId
+            SET tour.isActive = false;`, {placeId: req.params.place_id});
+        await session.run(`MATCH (tour:Tour)-[:LEADS_TO]->(place:Place)
+            WHERE place.placeId = $placeId
+            SET tour.isActive = false;`, {placeId: req.params.place_id});   
+        //delete relationship
+        await session.run(`MATCH (tour:Tour)-[r:STARTS_IN]->(place:Place) WHERE place.placeId = $placeId 
+            DELETE r` , {placeId: req.params.place_id});;
+        //delete both relationship and node
+        const deleted = await session.run(`MATCH (tour:Tour)-[r:LEADS_TO]->(place:Place) WHERE place.placeId = $placeId 
+            DELETE r, place` , {placeId: req.params.place_id});
+        session.commit();
+        res.send(deleted.summary.counters._stats.nodesDeleted > 0 ? 'deleted' : 'not deleted');
+    } catch (e) {
+        await session.rollback();
+        res.status(500).send(e.stack); 
+    } finally {
+        await session.close();
+    }
 });
 
 module.exports = {
