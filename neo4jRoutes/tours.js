@@ -50,8 +50,11 @@ router.get('/api/neo4j/tours/description/:search_keys', async(req, res) => {
 router.post('/api/neo4j/tours', async (req, res) => {
     const session = driver.session().beginTransaction();
     try {
-        const tour = await instance.create('Tour', {
-                tourId: uuidv4(),
+        const tourId = uuidv4();
+        const tour = await session.run(`CREATE (t:Tour {tourId: $tourId, difficulty: $difficulty,
+            price: $price, duration: $duration, numberOfSpots: $numberOfSpots, ageLimit: $ageLimit,
+            distance: $distance, description: $description, isActive: $isActive})`, {
+                tourId: tourId,
                 difficulty: req.body.difficulty,
                 price: req.body.price,
                 duration: req.body.duration,
@@ -61,11 +64,14 @@ router.post('/api/neo4j/tours', async (req, res) => {
                 description: req.body.description,
                 isActive: req.body.isActive
             });
-        const placeOfDeparture = await instance.first('Place', 'placeName', req.body.placeOfDeparture);
-        const placeOfDestination = await instance.first('Place', 'placeName', req.body.placeOfDestination);
-        await tour.relateTo(placeOfDeparture, 'starts_in');
-        await tour.relateTo(placeOfDestination, 'leads_to');
-        res.send(await tour.toJson());
+        await session.run(`MATCH (t:Tour), (p:Place) WHERE t.tourId = $tourId AND p.name = $placeName
+            CREATE (t)-[r:STARTS_IN]->(p)
+            RETURN type(r)`, {tourId: tourId, placeName: req.body.placeOfDeparture});
+        await session.run(`MATCH (t:Tour), (p:Place) WHERE t.tourId = $tourId AND p.name = $placeName
+            CREATE (t)-[r:LEADS_TO]->(p)
+            RETURN type(r)`, {tourId: tourId, placeName: req.body.placeOfDestination});
+        session.commit();
+        res.send(tour.summary.counters._stats.nodesCreated > 0 ? 'created' : 'not created');
     } catch (e) {
         await session.rollback();
         res.status(500).send(e.stack); 
