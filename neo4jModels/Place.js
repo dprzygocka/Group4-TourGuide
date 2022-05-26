@@ -8,7 +8,7 @@ module.exports = {
     },
     placeName: {
         type: 'string',
-        unique: 'true',
+        unique: true,
     },
     starts_in: {
         required: false,
