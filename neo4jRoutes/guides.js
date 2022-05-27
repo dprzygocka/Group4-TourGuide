@@ -44,7 +44,6 @@ router.post('/api/neo4j/guides', (req, res) => {
             license: req.body.license,
             email: req.body.email,
             phone: req.body.phone,
-            rating: req.body.rating,
             contractEndDate: req.body.contractEndDate,
     })
     .then((guide) => {
