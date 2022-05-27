@@ -9,7 +9,7 @@ module.exports = {
     numberOfFreeSpots: {
         type: 'integer',
         min: 0,
-        required: false
+        required: true,
     },
     scheduleDateTime: {
         type: 'datetime',
@@ -21,6 +21,7 @@ module.exports = {
         relationship: 'ASSIGNED_TO',
         direction: 'in',
         eager: true,
+        'cascade': 'detach'
     },
     refers_to: {
         type: "relationship",
@@ -28,6 +29,7 @@ module.exports = {
         direction: "in",
         target: "Rating",
         eager: true,
+        'cascade': 'delete' //delete the schedule node and related rating node
     },
     guides: {
         type: "relationship",
@@ -35,6 +37,7 @@ module.exports = {
         direction: "in",
         target: "Guide",
         eager: true,
+        'cascade': 'detach'
     },
     books: {
         type: "relationship",
@@ -65,5 +68,6 @@ module.exports = {
                 required: true,
             },
         },
+        'cascade': 'detach'
     }
 };

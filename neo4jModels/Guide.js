@@ -54,5 +54,6 @@ module.exports = {
         direction: "out",
         target: "Schedule",
         eager: false,
+        'cascade': 'detach',
     }
 };

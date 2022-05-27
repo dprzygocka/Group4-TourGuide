@@ -31,6 +31,7 @@ module.exports = {
         direction: "out",
         target: "Schedule",
         eager: true,
+        'cascade': 'detach'
     },
     writes: {
         type: "relationship",
@@ -38,5 +39,6 @@ module.exports = {
         direction: "in",
         target: "Customer",
         eager: true,
+        'cascade': 'detach'
     }
 };

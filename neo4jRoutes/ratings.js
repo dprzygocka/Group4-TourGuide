@@ -58,14 +58,21 @@ router.post('/api/neo4j/ratings', async (req, res) => {
             -[:${relationashipType}]-(${req.body.type.toLowerCase()} { ${req.body.type.toLowerCase()}Id: '${result}'})
             RETURN r.rating AS rating;
         `)
-        const ratingsCount = allRatings.records.length;
-        const ratingsValue = allRatings.records.map( (rating) => rating.get('rating')).reduce((previous, next) => previous + next);
-
+        let ratingsCount = allRatings.records.length;
+        let ratingsValue;
+        if (ratingsCount) {
+            ratingsValue = allRatings.records.map( (rating) => rating.get('rating')).reduce((previous, next) => previous + next);
+        } else {
+            ratingsCount = 1;
+            ratingsValue = req.body.rating;
+        }
+        
+        /*
         if (rating && schedule && new Date(jsonSchedule.scheduleDateTime) >= new Date()) {
             throw new Error('You cannot rate schedules from the future.');
         } else if (!rating) {
             throw new Error('Rating not created.');
-        }
+        } */
         await session.run(`MATCH (r:Rating), (s:Schedule) WHERE r.ratingId = "${rating.records[0].get('ratingId')}" AND s.scheduleId = "${req.body.scheduleId}" CREATE (r)-[z:REFERS_TO]->(s) RETURN type(z)`);
 
         await session.run(`MATCH (r:Rating), (c:Customer) 

@@ -41,6 +41,7 @@ module.exports = {
         direction: "out",
         target: "Rating",
         eager: false,
+        'cascade': 'detach' //deletes the customer node and relationship with rating
     },
     books: {
         type: "relationship",
@@ -71,5 +72,6 @@ module.exports = {
                 required: true,
             },
         },
+        'cascade': 'detach'
     }
 };

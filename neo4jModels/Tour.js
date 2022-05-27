@@ -65,6 +65,7 @@ module.exports = {
         direction: 'out',
         //automatically include in find all
         eager: true,
+        'cascade': 'detach'
     },
     leads_to: {
         type: 'relationship',
@@ -73,11 +74,13 @@ module.exports = {
         direction: 'out',
         //automatically include in find all
         eager: true,
+        'cascade': 'detach'
     },
     assigned_to: {
         type: 'relationship',
         target: 'Schedule',
         relationship: 'ASSIGNED_TO',
         direction: 'out',
+        'cascade': 'delete'
     }
 };
