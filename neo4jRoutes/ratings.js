@@ -1,4 +1,4 @@
-const {instance} = require('../database/connection_neo4j');
+const {instance, driver} = require('../database/connection_neo4j');
 const router = require('express').Router();
 const {v4: uuidv4 } = require('uuid');
 const {checkDirection, checkSortColumn} = require('../models/Utils');
@@ -36,30 +36,54 @@ router.get('/api/neo4j/ratings/:rating_id', (req, res) => {
     });
 });
 
-router.post('/api/neo4j/ratings', (req, res) => {
-    Promise.all([
-        instance.create('Rating', {
-            ratingId: uuidv4(),
-            rating: req.body.rating, 
-            type: req.body.type,
-            comment: req.body.comment,
-        }),
-        instance.first('Schedule', 'scheduleId', req.body.scheduleId),
-        instance.first('Customer', 'customerId', req.body.customerId),
-    ]).then(([rating, schedule, customer]) => {
-        Promise.all([
-            rating.relateTo(schedule, 'refers_to'),
-            rating.relateTo(customer, 'writes')
-        ])
-        return rating;
-    }).then((rating) => {
-        return rating.toJson();
-    }).then(json => {
-        res.send(json);
-    })
-    .catch(e => {
-        res.status(500).send(e.stack);
-    });
+router.post('/api/neo4j/ratings', async (req, res) => {
+    const session = driver.session().beginTransaction();
+    try {
+        const rating = await session.run(`CREATE (r:Rating {ratingId: "${uuidv4()}", rating: ${req.body.rating},type: "${req.body.type}", comment: "${req.body.comment}"}) RETURN r.ratingId AS ratingId`);
+
+        const schedule = await instance.first('Schedule', 'scheduleId', req.body.scheduleId);
+        const jsonSchedule = await schedule.toJson();
+
+        const relationashipType = req.body.type === 'TOUR' ? 'ASSIGNED_TO' : 'guides';
+
+        const tourOrGuideId = await session.run(`
+        MATCH (s:Schedule {scheduleId: '${req.body.scheduleId}'})
+        -[:${relationashipType}]-(${req.body.type.toLowerCase()})
+        RETURN ${req.body.type.toLowerCase()}.tourId AS id;
+        `)
+        const result = tourOrGuideId.records[0].get('id');
+
+        const allRatings = await session.run(`
+            MATCH (r:Rating {type: '${req.body.type}'})-[:REFERS_TO]-(schedule)
+            -[:${relationashipType}]-(${req.body.type.toLowerCase()} { ${req.body.type.toLowerCase()}Id: '${result}'})
+            RETURN r.rating AS rating;
+        `)
+        const ratingsCount = allRatings.records.length;
+        const ratingsValue = allRatings.records.map( (rating) => rating.get('rating')).reduce((previous, next) => previous + next);
+
+        if (rating && schedule && new Date(jsonSchedule.scheduleDateTime) >= new Date()) {
+            throw new Error('You cannot rate schedules from the future.');
+        } else if (!rating) {
+            throw new Error('Rating not created.');
+        }
+        await session.run(`MATCH (r:Rating), (s:Schedule) WHERE r.ratingId = "${rating.records[0].get('ratingId')}" AND s.scheduleId = "${req.body.scheduleId}" CREATE (r)-[z:REFERS_TO]->(s) RETURN type(z)`);
+
+        await session.run(`MATCH (r:Rating), (c:Customer) 
+        WHERE r.ratingId = "${rating.records[0].get('ratingId')}" AND c.customerId = "${req.body.customerId}"
+        CREATE (c)-[z:WRITES]->(r)
+        RETURN type(z)`);
+
+        const ratingType = req.body.type === 'TOUR' ? 'Tour' : 'Guide';
+        await session.run(`MATCH (r:${ratingType}) WHERE r.${ratingType.toLowerCase()}Id = "${result}" SET r.rating = ${(ratingsValue/ratingsCount).toFixed(2)}`);
+
+        await session.commit();
+        res.send("Rating created!");
+    } catch (e) {
+        await session.rollback();
+        res.status(500).send(e.stack); 
+    } finally {
+        await session.close();
+    }
 });
 
 router.delete('/api/neo4j/ratings/:rating_id', (req, res) => {
