@@ -108,18 +108,29 @@ router.post('/api/neo4j/customers/booking', async (req, res) => {
         updatedNumberOfspots = jsonSchedule.numberOfFreeSpots - req.body.numberOfSpots;
         tourPrice = jsonSchedule.assigned_to.node.price;
 
-    
-        let customer = await instance.first('Customer', 'customerId', req.body.customerId);
-        schedule = await instance.first('Schedule', 'scheduleId', req.body.scheduleId); //do i need it
-
-        await customer.relateTo(schedule, 'books', {
-                bookingId: uuidv4(),
-                totalPrice: tourPrice * req.body.numberOfSpots,
-                bookingDateTime: req.body.bookingDateTime,
-                numberOfSpots: req.body.numberOfSpots     
+        const bookingId = uuidv4();
+        await session.run(`MATCH (s:Schedule), (c:Customer) 
+        WHERE s.scheduleId = $scheduleId AND c.customerId = $customerId
+        CREATE (c)-[z:BOOKS {
+            bookingId: $bookingId,
+            totalPrice: $totalPrice,
+            bookingDateTime: $bookingDateTime,
+            numberOfSpots: $numberOfSpots
+        }]->(s)
+        RETURN type(z)`,
+        {
+            scheduleId: req.body.scheduleId,
+            customerId: req.body.customerId,
+            bookingId: bookingId,
+            totalPrice: tourPrice * req.body.numberOfSpots,
+            bookingDateTime: req.body.bookingDateTime,
+            numberOfSpots: req.body.numberOfSpots
         });
-
-        await schedule.update({"numberOfFreeSpots": updatedNumberOfspots });
+        await session.run(`MATCH (s:Schedule {scheduleId: $scheduleId}) SET s.numberOfFreeSpots = $numberOfFreeSpots`,
+        {
+            scheduleId: req.body.scheduleId, 
+            numberOfFreeSpots: updatedNumberOfspots
+        });
 
         await session.commit();
         res.send("Booking created!");
