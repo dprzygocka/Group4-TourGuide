@@ -8,9 +8,12 @@ router.get('/api/mongodb/places', async (req, res) => {
   const size = req.query.size || 10;
   //paging starts from 0
   const page = req.query.page - 1 || 0;
+  const sortData = {};
+  sortData[sortColumn] = direction;
   if (checkSortColumn(sortColumn) && checkDirection(direction)) {
       try {
         const places = await Place.find().skip(page).limit(size).sort(sortData);
+        console.log(places);
         res.send(places);
       } catch (error) {
           res.send(error);

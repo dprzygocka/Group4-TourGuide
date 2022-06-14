@@ -8,6 +8,8 @@ router.get('/api/mongodb/guides', async (req, res) => {
     const size = req.query.size || 10;
     //paging starts from 0
     const page = req.query.page - 1 || 0;
+    const sortData = {};
+    sortData[sortColumn] = direction;
     if (checkSortColumn(sortColumn) && checkDirection(direction)) {   
       try {
         const guides = await Guide.find().skip(page).limit(size).sort(sortData);
